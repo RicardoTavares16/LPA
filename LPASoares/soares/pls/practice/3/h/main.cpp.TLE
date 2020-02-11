@@ -1,0 +1,76 @@
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+#include <limits>
+
+#define INF (std::numeric_limits<int>::max()/2)
+
+#define for1(it, res) for(int it = 1; it <= res; it++)
+#define for2(it1, it2, res) for(int it1 = 1; it1 <= res; it1++) for(int it2 = 1; it2 <= res; it2++)
+#define for3(it1, it2, it3, res) for(int it1 = 1; it1 <= res; it1++) for(int it2 = 1; it2 <= res; it2++) for(int it3 = 1; it3 <= res; it3++)
+
+//#define DEBUG_DIST
+
+int vCount;
+
+int **dist;
+
+void floydWarshall() {
+    for3(k, i, j, vCount) {
+        if (dist[i][j] > dist[i][k] + dist[k][j]) {
+            dist[i][j] = dist[i][k] + dist[k][j];
+        }
+    }
+}
+
+void initDist() {
+    for1(i, vCount) {
+        for1(j, vCount) {
+            dist[i][j] = INF;
+        }
+        dist[i][i] =  0;
+    }
+}
+
+int checkPaths() {
+    bool fullPath;
+    int pathCount = 0;
+    for1(j, vCount) {
+        fullPath = true;
+        for1(i, vCount) {
+            if(dist[i][j] == INF) fullPath = false;
+        }
+        if (fullPath) pathCount++;
+    }
+    return pathCount;
+}
+
+int main() {
+    int eCount;
+
+    std::cin >> vCount >> eCount;
+
+    if(eCount <= vCount -1) {
+        std::cout << "0" << std::endl;
+        return 0;
+    }
+
+    dist = (int**) malloc((vCount + 1) * sizeof(int*));
+    for1(i, vCount) dist[i] = (int*) malloc((vCount + 1) * sizeof(int));
+
+    initDist();
+
+    for1(i, eCount) {
+        int end1, end2;
+        std::cin >> end1 >> end2;
+        dist[end1][end2] = 1;
+    }
+
+    floydWarshall();
+
+    std::cout << checkPaths() << std::endl;
+
+    for1(i, vCount) free(dist[i]);
+    free(dist);
+    return 0;
+}

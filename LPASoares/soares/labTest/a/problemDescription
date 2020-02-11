@@ -1,0 +1,38 @@
+Problem - The shortest distance
+
+Description
+Given a directed graph, a source vertex s and a target vertex t, report the minumum number of arcs that need to be traversed from s to t.
+150 points (out of 600)
+
+Input
+Each test case starts with two positive integers: the number of vertices ( n ) and the number of arcs ( m ). The next line contains the indices of the source and the target vertex. Assume that the vertices are numbered from 1 to n. Then, m, lines follow, each of which gives information about an arc that connects two verices (as two indices). The vertex in the left, connects to the vertex in the right. Assume that no vertex is connected to itself by an arc, and that a path from s to t always exists. The maximum number of vertices is 10. There is only one test case per file.
+
+Output
+For each test case, print the minimum number of arcs that need to be traversed from s to t.
+
+Example 1
+Input:
+5 6
+1 5
+1 2
+1 3
+1 4
+2 3
+2 5
+3 5
+
+Output:
+2
+
+Example 2
+Input:
+5 7
+4 5
+1 2
+1 3
+4 1
+2 3
+2 4
+2 5
+3 5
+

@@ -1,0 +1,36 @@
+Problem - Where is the negative cycle?
+
+Description
+Given a weighted directed graph, a source vertex s and a target vertex t, report the shortest distance from s to t or that a negative cycle exists in the graph.
+200 points (out of 600)
+
+Input
+Each test case starts with three positive integers: the number of vertices in the graph ( n ), the source vertex and the target vertex. Assume that the vertices are numbered from 1 to n. Then, the adjacency matrix of the graph follows. The adjacency matrix is a square matrix of size n x n such that its ement in row i and column j is a non-zero integer if there exists an arc from vertex i to vertex j with that distance, and 0 if there is no arc.
+You can assume that no vertex is connected to itself by an arc and that a path from the source to the target always exists. The maximum number of vertices is 20. There is only one test case per file.
+
+Output
+For each test case, if there exists a negative cycle in the graph, print "Negative Cycle". Otherwise, print the shortest distance from the source to the target vertex.
+
+Example 1
+Input:
+5 1 4
+0 0 -2 0 6
+8 0 3 0 3
+7 1 0 5 4
+6 0 2 0 1
+5 0 4 0 0
+
+Output:
+3
+
+Example 2
+Input:
+5 1 4
+0 0 -2 0 6
+2 0 3 0 3
+7 -1 0 5 4
+6 0 2 0 1
+5 0 4 0 0
+
+Output:
+Negative Cycle
