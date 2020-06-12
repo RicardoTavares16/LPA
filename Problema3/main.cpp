@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <vector>
 
-#define MAX_N 100
+#define MAX 1000
 
 #define for10(it, res) for (int it = 0; it < res; it++)
 #define for11(it, res) for (int it = 1; it <= res; it++)
@@ -11,10 +11,8 @@
 int nVertex;
 std::vector<std::vector<int>> matrix;
 
-int dfs[MAX_N], apCount, low[MAX_N], parent[MAX_N], dfsTimer;
-bool vIsAp[MAX_N];
-
-
+int dfs[MAX], apCount, low[MAX], parent[MAX], dfsTimer;
+bool vIsAp[MAX];
 
 void resetData()
 {
@@ -28,7 +26,6 @@ void resetData()
         vIsAp[i] = false;
     }
 }
-
 
 void ap(int v)
 {
@@ -68,7 +65,7 @@ void ap(int v)
     }
 }
 
-int getApCount()
+int articulationCount()
 {
     for (int i = 1; i <= nVertex; i++)
     {
@@ -82,35 +79,34 @@ int getApCount()
 
 void readInput()
 {
-      std::string str;
+    std::string str;
 
-    while(getline(std::cin, str)) {
+    while (getline(std::cin, str))
+    {
         char *cstr;
-        cstr = new char[str.size()+1];
+        cstr = new char[str.size() + 1];
         strcpy(cstr, str.c_str());
-        printf("String: %s\n", cstr);
         char *token;
+        //printf("String: %s\n", cstr);
         token = strtok(cstr, " ");
+
         int vertexA = atoi(token);
-        if (vertexA == 0) break;
-        /* walk through other tokens */
-        while( token != NULL ) {
-            printf( " %s\n", token );
-            
-            token = strtok(NULL, " ");
+        if (vertexA == 0)
+        {
+            break;
         }
-        // int end1 = atoi(strtok(cstr, " "));
-        // int end2 = atoi(strtok(cstr, " "));
-        // int end3 = atoi(strtok(cstr, " "));
-        // printf("end 3: %d end2: %d end1: %d\n", end3, end2, end1);
-        // int vertexA, vertexB, cost;
-        // scanf("%d %d %d", &vertexA, &vertexB, &cost);
-        // printf("Cost: %d\n", cost);
-        // matrix[vertexA].push_back(vertexB);
-        // matrix[vertexB].push_back(vertexA);
+
+        token = strtok(NULL, " ");
+        int vertexB = atoi(token);
+
+        token = strtok(NULL, " ");
+        int cost = atoi(token);
+
+        //printf("%d %d %d\n", vertexA, vertexB, cost);
+        matrix[vertexA].push_back(vertexB);
+        matrix[vertexB].push_back(vertexA);
         //matrix[vertexA][vertexB] = cost;
-        }
-            
+    }
 }
 
 int main()
@@ -118,19 +114,25 @@ int main()
     int input, counter = 0;
     std::string str;
 
-    while(getline(std::cin, str)) {
+    while (getline(std::cin, str))
+    {
         input = std::atoi(str.c_str());
-        if (input == 0) break;
-        
-        printf("Loop %d\n", counter++);
-        
-        printf("Input: %d\n", input);
+        if (input == 0)
+            break;
         nVertex = input;
+        //printf("Input: %d\n", input);
+
         resetData();
         readInput();
-        printf("Number of Servers: %d\n", getApCount());
-        
-       
+
+        int serverNumber = articulationCount();
+        if(serverNumber == 0){
+            printf("no server\n");
+        }
+        else{
+            printf("%d %d %d\n", serverNumber, 0, 0);
+        }
+        //printf("Number of Servers: %d\n", articulationCount());
     }
 
     return 0;
