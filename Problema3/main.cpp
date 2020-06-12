@@ -178,7 +178,6 @@ void readInput()
 #ifdef DEBUG
         printf("String: %s\n", cstr);
 #endif
-
         //Read first int
         token = strtok(cstr, " ");
 
@@ -194,17 +193,17 @@ void readInput()
         token = strtok(NULL, " ");
         int cost = atoi(token);
 
-
-        printf("Input %d %d Cost: %d\n", vertexA, vertexB, cost);
+        //printf("Input %d %d Cost: %d\n", vertexA, vertexB, cost);
 
         //Make adjancy matrix with costs
-        adjency[vertexA][vertexB] = cost;
         matrix[vertexA].push_back(std::make_pair(vertexB, cost));
         matrix[vertexB].push_back(std::make_pair(vertexA, cost));
 
-        edges.push_back(std::make_pair(adjency[vertexA][vertexB], std::make_pair(vertexA, vertexB)));
+        //Had to make backup matrix, was having problems with costs
+        adjency[vertexA][vertexB] = cost;
 
-        
+        //Node for Kruskal
+        edges.push_back(std::make_pair(adjency[vertexA][vertexB], std::make_pair(vertexA, vertexB)));
     }
 }
 
@@ -274,21 +273,19 @@ int main()
         if (serverNumber == 0)
         {
             printf("no server\n");
-            printMatrix();
-            freeArray();
+            //printMatrix();
         }
         else if (serverNumber == 1)
         {
             printf("%d %d %d\n", serverNumber, 0, 0);
-            printMatrix();
+            //printMatrix();
 
 #ifdef DEBUG
-            for (int i = 0; i < nVertex; i++)
+            for (int i = 1; i <= nVertex; i++)
             {
                 printf("Vertex %d: AP: %d \n", i, isAP[i]);
             }
 #endif
-            freeArray();
         }
         else
         {
@@ -327,8 +324,8 @@ int main()
             // }
 
             printf("%d %d %d\n", serverNumber, linkServersCost, treeCost);
-            freeArray();
         }
+            freeArray();
     }
 
     return 0;
