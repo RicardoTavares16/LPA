@@ -7,7 +7,6 @@
 std::vector< std::vector< std::pair<int,int> > > matrix;
 
 int nVertex, apCount, dfs[MAX], low[MAX], parent[MAX], dfsTimer;
-
 bool isAP[MAX];
 
 void resetData()
@@ -76,14 +75,19 @@ int articulationCount()
 void readInput()
 {
     std::string str;
-
     while (getline(std::cin, str))
     {
+        //Get new line
         char *cstr;
         cstr = new char[str.size() + 1];
         strcpy(cstr, str.c_str());
         char *token;
-        //printf("String: %s\n", cstr);
+
+        #ifdef DEBUG
+        printf("String: %s\n", cstr);
+        #endif
+
+        //Read first int    
         token = strtok(cstr, " ");
 
         int vertexA = atoi(token);
@@ -91,14 +95,17 @@ void readInput()
         {
             break;
         }
-
+        //Second int
         token = strtok(NULL, " ");
         int vertexB = atoi(token);
-
+        //Third int
         token = strtok(NULL, " ");
         int cost = atoi(token);
 
-        //printf("%d %d %d\n", vertexA, vertexB, cost);
+        #ifdef DEBUG
+        printf("%d %d %d\n", vertexA, vertexB, cost);
+        #endif
+        //Make adjancy matrix with costs
         matrix[vertexA].push_back(std::make_pair(vertexB,cost));
         matrix[vertexB].push_back(std::make_pair(vertexA,cost));
     }
@@ -112,22 +119,30 @@ int main()
     while (getline(std::cin, str))
     {
         input = std::atoi(str.c_str());
-        if (input == 0)
-            break;
         nVertex = input;
-        //printf("Input: %d\n", input);
 
-        resetData();
-        readInput();
+        #ifdef DEBUG
+        printf("Input: %d\n", input);
+        #endif
 
+        resetData(); //Clear matrix, reset counters
+        readInput(); //Start reading input
+
+        //Number of servers
         int serverNumber = articulationCount();
+
         if(serverNumber == 0){
             printf("no server\n");
         }
         else{
             printf("%d %d %d\n", serverNumber, 0, 0);
+            
+            #ifdef DEBUG
+            for(int i = 0; i < nVertex; i++){
+                printf("Vertex %d: AP: %d \n", i, isAP[i]);
+            }
+            #endif
         }
-        //printf("Number of Servers: %d\n", articulationCount());
     }
 
     return 0;
