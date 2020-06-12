@@ -84,7 +84,7 @@ int kruskal()
 //Free adjency matrix
 void freeArray()
 {
-    for (int i = 0; i <= nVertex; i++)
+    for (int i = 1; i <= nVertex; i++)
     {
         free(adjency[i]);
     }
@@ -294,7 +294,7 @@ int main()
             int treeCost = 0;
             //printMatrix();
             floydWarshall();
-            treeCost = kruskal();
+            //treeCost = kruskal();
 
             for (int i = 1; i <= nVertex; i++)
             {
