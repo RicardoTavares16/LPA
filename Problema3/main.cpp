@@ -14,9 +14,7 @@ std::vector<std::vector<int>> matrix;
 int dfs[MAX_N], apCount, low[MAX_N], parent[MAX_N], dfsTimer;
 bool vIsAp[MAX_N];
 
-void readInput()
-{
-}
+
 
 void resetData()
 {
@@ -82,28 +80,56 @@ int getApCount()
     return apCount;
 }
 
+void readInput()
+{
+      std::string str;
+
+    while(getline(std::cin, str)) {
+        char *cstr;
+        cstr = new char[str.size()+1];
+        strcpy(cstr, str.c_str());
+        printf("String: %s\n", cstr);
+        char *token;
+        token = strtok(cstr, " ");
+        int vertexA = atoi(token);
+        if (vertexA == 0) break;
+        /* walk through other tokens */
+        while( token != NULL ) {
+            printf( " %s\n", token );
+            
+            token = strtok(NULL, " ");
+        }
+        // int end1 = atoi(strtok(cstr, " "));
+        // int end2 = atoi(strtok(cstr, " "));
+        // int end3 = atoi(strtok(cstr, " "));
+        // printf("end 3: %d end2: %d end1: %d\n", end3, end2, end1);
+        // int vertexA, vertexB, cost;
+        // scanf("%d %d %d", &vertexA, &vertexB, &cost);
+        // printf("Cost: %d\n", cost);
+        // matrix[vertexA].push_back(vertexB);
+        // matrix[vertexB].push_back(vertexA);
+        //matrix[vertexA][vertexB] = cost;
+        }
+            
+}
 
 int main()
 {
     int input, counter = 0;
-    while (scanf("%d", &input) != EOF)
-    {
-        if (input != 0){
-            printf("Loop %d", counter++);
-            int vertexA, vertexB, cost;
-            printf("Input: %d\n", input);
-            nVertex = input;
-            resetData();
-            for (int i = 0; i < nVertex; i++)
-            {
-                scanf("%d %d %d", &vertexA, &vertexB, &cost);
-                printf("Cost: %d\n", cost);
-                matrix[vertexA].push_back(vertexB);
-                matrix[vertexB].push_back(vertexA);
-                //matrix[vertexA][vertexB] = cost;
-            }
-            printf("Number of Servers: %d\n", getApCount());
-        }
+    std::string str;
+
+    while(getline(std::cin, str)) {
+        input = std::atoi(str.c_str());
+        if (input == 0) break;
+        
+        printf("Loop %d\n", counter++);
+        
+        printf("Input: %d\n", input);
+        nVertex = input;
+        resetData();
+        readInput();
+        printf("Number of Servers: %d\n", getApCount());
+        
        
     }
 
