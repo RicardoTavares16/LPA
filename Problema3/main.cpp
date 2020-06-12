@@ -5,14 +5,11 @@
 
 #define MAX 1000
 
-#define for10(it, res) for (int it = 0; it < res; it++)
-#define for11(it, res) for (int it = 1; it <= res; it++)
-
-int nVertex;
 std::vector<std::vector<int>> matrix;
 
-int dfs[MAX], apCount, low[MAX], parent[MAX], dfsTimer;
-bool vIsAp[MAX];
+int nVertex, apCount, dfs[MAX], low[MAX], parent[MAX], dfsTimer;
+
+bool isAP[MAX];
 
 void resetData()
 {
@@ -23,37 +20,37 @@ void resetData()
     for (int i = 1; i <= nVertex; i++)
     {
         dfs[i] = -1;
-        vIsAp[i] = false;
+        isAP[i] = false;
     }
 }
 
-void ap(int v)
+void articulationPoints(int v)
 {
     dfsTimer++;
     dfs[v] = dfsTimer;
     low[v] = dfsTimer;
 
-    for10(i, (int)matrix[v].size())
+    for (int i = 0; i < (int)matrix[v].size(); i++)
     {
         int w = matrix[v][i];
         if (dfs[w] == -1)
         {
             parent[w] = v;
-            ap(w);
+            articulationPoints(w);
             low[v] = std::min(low[v], low[w]);
             if (dfs[v] == 1 && dfs[w] != 2)
             {
-                if (!vIsAp[v])
+                if (!isAP[v])
                 {
-                    vIsAp[v] = true;
+                    isAP[v] = true;
                     apCount++;
                 }
             }
             if (dfs[v] != 1 && low[w] >= dfs[v])
             {
-                if (!vIsAp[v])
+                if (!isAP[v])
                 {
-                    vIsAp[v] = true;
+                    isAP[v] = true;
                     apCount++;
                 }
             }
@@ -71,7 +68,7 @@ int articulationCount()
     {
         if (dfs[i] == -1)
         {
-            ap(i);
+            articulationPoints(i);
         }
     }
     return apCount;
@@ -100,7 +97,7 @@ void readInput()
         int vertexB = atoi(token);
 
         token = strtok(NULL, " ");
-        int cost = atoi(token);
+        //int cost = atoi(token);
 
         //printf("%d %d %d\n", vertexA, vertexB, cost);
         matrix[vertexA].push_back(vertexB);
@@ -111,7 +108,7 @@ void readInput()
 
 int main()
 {
-    int input, counter = 0;
+    int input;
     std::string str;
 
     while (getline(std::cin, str))
