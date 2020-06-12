@@ -4,8 +4,7 @@
 #include <vector>
 
 #define MAX 1000
-
-std::vector<std::vector<int>> matrix;
+std::vector< std::vector< std::pair<int,int> > > matrix;
 
 int nVertex, apCount, dfs[MAX], low[MAX], parent[MAX], dfsTimer;
 
@@ -32,7 +31,7 @@ void articulationPoints(int v)
 
     for (int i = 0; i < (int)matrix[v].size(); i++)
     {
-        int w = matrix[v][i];
+        int w = matrix[v][i].first;
         if (dfs[w] == -1)
         {
             parent[w] = v;
@@ -97,12 +96,11 @@ void readInput()
         int vertexB = atoi(token);
 
         token = strtok(NULL, " ");
-        //int cost = atoi(token);
+        int cost = atoi(token);
 
         //printf("%d %d %d\n", vertexA, vertexB, cost);
-        matrix[vertexA].push_back(vertexB);
-        matrix[vertexB].push_back(vertexA);
-        //matrix[vertexA][vertexB] = cost;
+        matrix[vertexA].push_back(std::make_pair(vertexB,cost));
+        matrix[vertexB].push_back(std::make_pair(vertexA,cost));
     }
 }
 
