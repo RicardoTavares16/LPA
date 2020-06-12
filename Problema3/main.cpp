@@ -11,64 +11,80 @@
 
 std::vector<std::vector<std::pair<int, int>>> matrix;
 
-int nVertex, apCount, dfs[MAX], low[MAX], parent[MAX], dfsTimer;
+int nVertex, apCount, dfs[MAX], low[MAX], parent[MAX], dfsTimer, vRank[MAX], vSet[MAX];
 bool isAP[MAX];
 int **adjency;
 
 std::vector<std::pair<long double, std::pair<int, int>>> edges;
-int vSet[MAX], vRank[MAX];
 
-int parent2[MAX];
-
-int find(int i)
-{
-    while (parent2[i] != i)
-        i = parent2[i];
-    return i;
+int findSet(int a) {
+    if(vSet[a] != a) {
+        vSet[a] = findSet(vSet[a]);
+    }
+    return vSet[a];
 }
 
-void union1(int i, int j)
+void link(int a, int b) {
+    if (vRank[a] > vRank[b]) {
+        vSet[b] = a;
+    }
+    else {
+        vSet[a] = b;
+        if(vRank[a]==vRank[b]) {
+            vRank[b]++;
+        }
+    }
+}
+
+void unionSet(int a, int b) {
+    link(findSet(a), findSet(b));
+}
+
+void makeSet() {
+    for(int i = 1; i <= nVertex; i++) {
+        vSet[i] = i;
+        vRank[i] = 0;
+    }
+}
+
+bool decrease(const std::pair<long double, std::pair<int, int>> &a, const std::pair<long double, std::pair<int, int>> &b)
 {
-    int a = find(i);
-    int b = find(j);
-    parent2[a] = b;
+    if (a.first == b.first)
+    {
+        if (a.second.first == b.second.first)
+        {
+            return (a.second.second < b.second.second);
+        }
+        else
+            return (a.second.first < b.second.first);
+    }
+    else
+        return (a.first > b.first);
 }
 
 int kruskal()
 {
-    int mincost = 0;
-
-    for (int i = 1; i <= nVertex; i++)
-        parent2[i] = i;
-
-    int edge_count = 0;
-    while (edge_count < nVertex - 1)
-    {
-        int min = std::numeric_limits<int>::max() / 2, a = -1, b = -1;
-        for (int i = 1; i <= nVertex; i++)
-        {
-            for (int j = 1; j <= nVertex; j++)
-            {
-                if (find(i) != find(j) && adjency[i][j] < min)
-                {
-                    min = adjency[i][j];
-                    a = i;
-                    b = j;
-                }
-            }
+   int w, weight = 0;
+    makeSet();
+    std::sort(edges.begin(), edges.end(), decrease);
+    int u, v;
+    while(!edges.empty()) {
+        u = edges.back().second.first;
+        v = edges.back().second.second;
+        w = edges.back().first;
+        if(findSet(u) != findSet(v)) {
+            weight += w;
+            unionSet(u, v);
         }
-
-        union1(a, b);
-
-        edge_count++;
-        mincost += min;
+        edges.pop_back();
     }
-    return mincost;
+    return weight;
 }
 
+//Free adjency matrix
 void freeArray()
 {
-    for (int i = 1; i <= nVertex; i++)
+    for (int i = 0; i <= nVertex; i++)
     {
         free(adjency[i]);
     }
@@ -148,21 +164,6 @@ int articulationCount()
     return apCount;
 }
 
-bool decrease(const std::pair<long double, std::pair<int, int>> &a, const std::pair<long double, std::pair<int, int>> &b)
-{
-    if (a.first == b.first)
-    {
-        if (a.second.first == b.second.first)
-        {
-            return (a.second.second < b.second.second);
-        }
-        else
-            return (a.second.first < b.second.first);
-    }
-    else
-        return (a.first > b.first);
-}
-
 void readInput()
 {
     std::string str;
@@ -194,7 +195,7 @@ void readInput()
         int cost = atoi(token);
 
 
-        //printf("Input %d %d Cost: %d\n", vertexA, vertexB, cost);
+        printf("Input %d %d Cost: %d\n", vertexA, vertexB, cost);
 
         //Make adjancy matrix with costs
         adjency[vertexA][vertexB] = cost;
@@ -203,7 +204,7 @@ void readInput()
 
         edges.push_back(std::make_pair(adjency[vertexA][vertexB], std::make_pair(vertexA, vertexB)));
 
-        std::sort(edges.begin(), edges.end(), decrease);
+        
     }
 }
 
@@ -273,7 +274,8 @@ int main()
         if (serverNumber == 0)
         {
             printf("no server\n");
-            //printMatrix();
+            printMatrix();
+            freeArray();
         }
         else if (serverNumber == 1)
         {
@@ -286,13 +288,14 @@ int main()
                 printf("Vertex %d: AP: %d \n", i, isAP[i]);
             }
 #endif
+            freeArray();
         }
         else
         {
 
             int linkServersCost = 0;
             int treeCost = 0;
-
+            //printMatrix();
             floydWarshall();
             treeCost = kruskal();
 
@@ -324,8 +327,8 @@ int main()
             // }
 
             printf("%d %d %d\n", serverNumber, linkServersCost, treeCost);
+            freeArray();
         }
-        freeArray();
     }
 
     return 0;
