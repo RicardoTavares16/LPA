@@ -17,31 +17,42 @@ int **adjency;
 
 std::vector<std::pair<long double, std::pair<int, int>>> edges;
 
-int findSet(int a) {
-    if(vSet[a] != a) {
+//Find set of vertex a
+int findSet(int a)
+{
+    if (vSet[a] != a)
+    {
         vSet[a] = findSet(vSet[a]);
     }
     return vSet[a];
 }
 
-void link(int a, int b) {
-    if (vRank[a] > vRank[b]) {
+void link(int a, int b)
+{
+    if (vRank[a] > vRank[b])
+    {
         vSet[b] = a;
     }
-    else {
+    else
+    {
         vSet[a] = b;
-        if(vRank[a]==vRank[b]) {
+        if (vRank[a] == vRank[b])
+        {
             vRank[b]++;
         }
     }
 }
 
-void unionSet(int a, int b) {
+//Union a and b, "false" if they are in the same set
+void unionSet(int a, int b)
+{
     link(findSet(a), findSet(b));
 }
 
-void makeSet() {
-    for(int i = 1; i <= nVertex; i++) {
+void makeSet()
+{
+    for (int i = 1; i <= nVertex; i++)
+    {
         vSet[i] = i;
         vRank[i] = 0;
     }
@@ -64,15 +75,17 @@ bool decrease(const std::pair<long double, std::pair<int, int>> &a, const std::p
 
 int kruskal()
 {
-   int w, weight = 0;
+    int w, weight = 0;
     makeSet();
     std::sort(edges.begin(), edges.end(), decrease);
     int u, v;
-    while(!edges.empty()) {
+    while (!edges.empty())
+    {
         u = edges.back().second.first;
         v = edges.back().second.second;
         w = edges.back().first;
-        if(findSet(u) != findSet(v)) {
+        if (findSet(u) != findSet(v))
+        {
             weight += w;
             unionSet(u, v);
         }
@@ -96,8 +109,10 @@ void resetData()
 {
     matrix.clear();
     matrix.resize(nVertex + 1);
+
     apCount = 0;
     dfsTimer = 0;
+
     for (int i = 1; i <= nVertex; i++)
     {
         dfs[i] = -1;
@@ -275,7 +290,7 @@ int main()
             printf("no server\n");
             //printMatrix();
         }
-        else if (serverNumber == 1)
+        else if (serverNumber == 1) //If it only has 1 Articulation Point, no need to calculate cable costs
         {
             printf("%d %d %d\n", serverNumber, 0, 0);
             //printMatrix();
@@ -289,12 +304,11 @@ int main()
         }
         else
         {
-
             int linkServersCost = 0;
             int treeCost = 0;
             //printMatrix();
+            treeCost = kruskal();
             floydWarshall();
-            //treeCost = kruskal();
 
             for (int i = 1; i <= nVertex; i++)
             {
@@ -306,6 +320,7 @@ int main()
                         {
                             if (adjency[i][j] != std::numeric_limits<int>::max() / 2)
                             {
+                                //If both servers are Networks, add to total cost
                                 linkServersCost += adjency[i][j];
                             }
                         }
@@ -325,7 +340,7 @@ int main()
 
             printf("%d %d %d\n", serverNumber, linkServersCost, treeCost);
         }
-            freeArray();
+        freeArray();
     }
 
     return 0;
