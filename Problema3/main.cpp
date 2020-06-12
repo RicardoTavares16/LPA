@@ -15,60 +15,56 @@ int nVertex, apCount, dfs[MAX], low[MAX], parent[MAX], dfsTimer;
 bool isAP[MAX];
 int **adjency;
 
-std::vector< std::pair<long double, std::pair<int, int> > > edges;
+std::vector<std::pair<long double, std::pair<int, int>>> edges;
 int vSet[MAX], vRank[MAX];
 
-int parent2[MAX]; 
-  
-// Find set of vertex i 
-int find(int i) 
-{ 
-    while (parent2[i] != i) 
-        i = parent2[i]; 
-    return i; 
-} 
-  
-// Does union of i and j. It returns 
-// false if i and j are already in same 
-// set. 
-void union1(int i, int j) 
-{ 
-    int a = find(i); 
-    int b = find(j); 
-    parent2[a] = b; 
-} 
-  
+int parent2[MAX];
 
-// Finds MST using Kruskal's algorithm 
-int kruskalMST() 
-{ 
-    int mincost = 0; // Cost of min MST. 
-  
-    // Initialize sets of disjoint sets. 
-    for (int i = 1; i <= nVertex; i++) 
-        parent2[i] = i; 
-  
-    // Include minimum weight edges one by one 
-    int edge_count = 0; 
-    while (edge_count < nVertex - 1) { 
-        int min = std::numeric_limits<int>::max() / 2, a = -1, b = -1; 
-        for (int i = 1; i <= nVertex; i++) { 
-            for (int j = 1; j <= nVertex; j++) { 
-                if (find(i) != find(j) && adjency[i][j] < min) {
-                    min = adjency[i][j]; 
-                    a = i; 
-                    b = j; 
-                } 
-            } 
-        } 
-  
-        union1(a, b); 
-        
+int find(int i)
+{
+    while (parent2[i] != i)
+        i = parent2[i];
+    return i;
+}
+
+void union1(int i, int j)
+{
+    int a = find(i);
+    int b = find(j);
+    parent2[a] = b;
+}
+
+int kruskal()
+{
+    int mincost = 0;
+
+    for (int i = 1; i <= nVertex; i++)
+        parent2[i] = i;
+
+    int edge_count = 0;
+    while (edge_count < nVertex - 1)
+    {
+        int min = std::numeric_limits<int>::max() / 2, a = -1, b = -1;
+        for (int i = 1; i <= nVertex; i++)
+        {
+            for (int j = 1; j <= nVertex; j++)
+            {
+                if (find(i) != find(j) && adjency[i][j] < min)
+                {
+                    min = adjency[i][j];
+                    a = i;
+                    b = j;
+                }
+            }
+        }
+
+        union1(a, b);
+
         edge_count++;
-        mincost += min; 
-    } 
-    return mincost; 
-} 
+        mincost += min;
+    }
+    return mincost;
+}
 
 void freeArray()
 {
@@ -152,14 +148,19 @@ int articulationCount()
     return apCount;
 }
 
-bool decrease(const std::pair<long double, std::pair<int, int> > &a, const std::pair<long double, std::pair<int, int> > &b) {
-	if(a.first == b.first) {
-		if(a.second.first == b.second.first) {
-        	return (a.second.second < b.second.second);
-		}
-		else return (a.second.first < b.second.first);
-	}
-	else return (a.first > b.first);
+bool decrease(const std::pair<long double, std::pair<int, int>> &a, const std::pair<long double, std::pair<int, int>> &b)
+{
+    if (a.first == b.first)
+    {
+        if (a.second.first == b.second.first)
+        {
+            return (a.second.second < b.second.second);
+        }
+        else
+            return (a.second.first < b.second.first);
+    }
+    else
+        return (a.first > b.first);
 }
 
 void readInput()
@@ -192,16 +193,17 @@ void readInput()
         token = strtok(NULL, " ");
         int cost = atoi(token);
 
-#ifdef DEBUG
-        printf("%d %d %d\n", vertexA, vertexB, cost);
-#endif
+
+        //printf("Input %d %d Cost: %d\n", vertexA, vertexB, cost);
+
         //Make adjancy matrix with costs
+        adjency[vertexA][vertexB] = cost;
         matrix[vertexA].push_back(std::make_pair(vertexB, cost));
         matrix[vertexB].push_back(std::make_pair(vertexA, cost));
 
-        adjency[vertexA][vertexB] = cost;
-        //printf("%d %d cost: %d\n", vertexA, vertexB, cost);
-        //printf("VertexA %d first: %d second: %d\n", vertexA, matrix[vertexA][vertexB].first, matrix[vertexA][vertexB].second);
+        edges.push_back(std::make_pair(adjency[vertexA][vertexB], std::make_pair(vertexA, vertexB)));
+
+        std::sort(edges.begin(), edges.end(), decrease);
     }
 }
 
@@ -236,6 +238,18 @@ void floydWarshall()
     }
 }
 
+void printMatrix()
+{
+    for (int i = 1; i <= nVertex; i++)
+    {
+        for (int j = 1; j <= nVertex; j++)
+        {
+            printf("Matrix -> A: %d B: %d Cost: %d\n", i, j, adjency[i][j]);
+        }
+    }
+    printf("\n");
+}
+
 int main()
 {
     int input;
@@ -255,14 +269,16 @@ int main()
 
         //Number of servers
         int serverNumber = articulationCount();
-        
+
         if (serverNumber == 0)
         {
             printf("no server\n");
+            //printMatrix();
         }
         else if (serverNumber == 1)
         {
             printf("%d %d %d\n", serverNumber, 0, 0);
+            printMatrix();
 
 #ifdef DEBUG
             for (int i = 0; i < nVertex; i++)
@@ -273,12 +289,12 @@ int main()
         }
         else
         {
-            
+
             int linkServersCost = 0;
             int treeCost = 0;
 
-            treeCost = kruskalMST();
             floydWarshall();
+            treeCost = kruskal();
 
             for (int i = 1; i <= nVertex; i++)
             {
@@ -296,17 +312,16 @@ int main()
                     }
                 }
             }
-             for (int i = 1; i <= nVertex; i++)
-            {
-                for (int j = 1; j <= nVertex; j++)
-                {
-                    if(adjency[i][j] != 0 && adjency[i][j] != std::numeric_limits<int>::max() / 2){
-                    //printf("%d %d cost: %d\n", i, j, adjency[i][j]);
-                    }
-                }
-            }
-
-            
+            // for (int i = 1; i <= nVertex; i++)
+            // {
+            //     for (int j = 1; j <= nVertex; j++)
+            //     {
+            //         if (adjency[i][j] != 0 && adjency[i][j] != std::numeric_limits<int>::max() / 2)
+            //         {
+            //             printf("Adjency after Warshall: %d %d cost: %d\n", i, j, adjency[i][j]);
+            //         }
+            //     }
+            // }
 
             printf("%d %d %d\n", serverNumber, linkServersCost, treeCost);
         }
