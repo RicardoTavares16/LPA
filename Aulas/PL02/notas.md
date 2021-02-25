@@ -27,6 +27,6 @@
             else {
                 start = start + 1
             }
-        return false
         }
+        return false
     }
