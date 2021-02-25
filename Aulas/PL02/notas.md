@@ -5,28 +5,28 @@
 
 - d) function 3Sum (s) {
         sort(s)
-        for i = 1 to n-2{
+        for i = 1 to n-2 {
 
-            if(s[i] >= 0){
+            if(s[i] >= 0) {
                 return false // se já fiz tudo
             }
 
-            start = i+1
+            start = i + 1
             end = n
             a = s[i]
 
             while start < end:
                 b = s[start];  <= s[end]
             
-            if (a + b + c == 0) {
-                return true
-            }
-            else if (a + b + c > 0) {
-                end = end - 1
-            }
-            else {
-                start = start + 1
-            }
+                if (a + b + c == 0) {
+                    return true
+                }
+                else if (a + b + c > 0) {
+                    end = end - 1
+                }
+                else {
+                    start = start + 1
+                }
         }
         return false
     }
