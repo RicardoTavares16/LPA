@@ -4,8 +4,9 @@
 #include <sstream>
 
 int** board;
+int boardSize, maxMoves;
 
-void printMatrix(int** board, int boardSize) {
+void printMatrix(int** board) {
         int row, col;
         // int boardSizeCheck = sizeof(board[0])/sizeof(board[0][0]);
         // std::cout << "Size " << boardSizeCheck << "\n";
@@ -20,14 +21,14 @@ void printMatrix(int** board, int boardSize) {
         }
 };
 
-void alloc(int boardSize) {
+void alloc() {
     board = (int**) malloc((boardSize) * sizeof(int*));
     for(int i = 0; i < boardSize; i++) {
         board[i] = (int*) malloc((boardSize) * sizeof(int));
     }
 }
 
-void clear(int boardSize) {
+void clear() {
       for(int i = 0; i < boardSize; i++) {
             free(board[i]);
         }
@@ -44,6 +45,44 @@ int solve2048(int moves) {
     }
 }
 
+void fall() {
+    int i, j, k, temp;
+
+    // migrate zeros to backward
+    for (i = 0; i < boardSize; ++i) {
+        j = boardSize - 1;
+        k = boardSize - 2;
+        while (k > -1) {
+            if (board[j][i] == 0 && board[k][i] != 0) {
+                temp = board[k][i];
+                board[k][i] = board[j][i];
+                board[j][i] = temp;
+                j--;
+            }
+            else if (board[j][i]) {
+                j--;
+            }
+            k--;
+        }
+    }
+
+    // resolve
+    for (i = boardSize - 2; i >= 0; --i) {
+        for (j = 0; j < boardSize; ++j) {
+            if (board[i][j] == board[i+1][j]) {
+                board[i+1][j] = board[i][j] * 2;
+                board[i][j] = 0;
+            }
+            else if (board[i+1][j] == 0) {
+                board[i+1][j] = board[i][j];
+                board[i][j] = 0;
+            } else {
+                board[i][j] = board[i][j];
+            }
+        }
+    }
+}
+
 int main()
 {
 
@@ -52,10 +91,9 @@ int main()
 
     for (int i = 0; i < testCases; i++)
     {
-        int boardSize, maxMoves;
         std::cin >> boardSize >> maxMoves;
-        //std::cout << "Board: " << boardSize << " Moves: " << maxMoves << "\n";
-        alloc(boardSize);
+        std::cout << "Board: " << boardSize << " Moves: " << maxMoves << "\n";
+        alloc();
 
         for (int j = 0; j < boardSize; j++)
         {
@@ -68,20 +106,23 @@ int main()
                 while (iss >> inputNumber)
                 {
                     board[j][a] = inputNumber;
-                    //std::cout << inputNumber;
+                    std::cout << inputNumber;
                 }
             }
-            //std::cout << "\n";
+            std::cout << "\n";
         }
-        //printMatrix(board, boardSize);
-        int best = solve2048(maxMoves);
-        if(best == -1){
-            std::cout << "no solution\n";
-        }
-        else{
-            std::cout << best << "\n";
-        }
+        printMatrix(board);
+        std::cout << "Fall\n";
+        fall();
+        printMatrix(board);
+        // int best = solve2048(maxMoves);
+        // if(best == -1){
+        //     std::cout << "no solution\n";
+        // }
+        // else{
+        //     std::cout << best << "\n";
+        // }
 
-        clear(boardSize);
+        clear();
     }
 }
