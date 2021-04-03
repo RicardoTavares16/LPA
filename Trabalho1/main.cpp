@@ -83,6 +83,27 @@ void fall() {
     }
 }
 
+void upside_down() {
+    int temp;
+    for(int i = 0; i < boardSize / 2; ++i) {
+        for(int j = 0; j < boardSize; ++j) {
+            temp = board[i][j];
+            board[i][j] = board[boardSize-i-1][j];
+            board[boardSize-i-1][j] = temp;
+        }
+    }
+}
+
+void up() {
+    upside_down();
+    fall();
+    upside_down();
+}
+
+void down() {
+    fall();
+}
+
 int main()
 {
 
@@ -113,7 +134,7 @@ int main()
         }
         printMatrix(board);
         std::cout << "Fall\n";
-        fall();
+        up();
         printMatrix(board);
         // int best = solve2048(maxMoves);
         // if(best == -1){
