@@ -23,17 +23,17 @@ void printMatrix(int** board) {
 };
 
 void alloc() {
-    board = (int**) malloc((boardSize) * sizeof(int*));
-    for(int i = 0; i < boardSize; i++) {
-        board[i] = (int*) malloc((boardSize) * sizeof(int));
-    }
+  board = new int*[boardSize];
+for(int i = 0; i < boardSize; ++i) {
+    board[i] = new int[boardSize];
+}
 }
 
 void clear() {
-      for(int i = 0; i < boardSize; i++) {
-            free(board[i]);
-        }
-	    free(board);
+    for(int i = 0; i < boardSize; ++i) {
+        delete [] board[i];
+    }
+    delete [] board;
 }
 
 int is_solved(int** board) {
@@ -207,12 +207,12 @@ int main()
             }
             std::cout << "\n";
         }
-        //printMatrix(board);
-        //std::cout << "Fall\n";
+        printMatrix(board);
+        std::cout << "Fall\n";
         //solve2048(board, maxMoves);
-        //board = right(board);
-        //printMatrix(board);
-        solve2048(board, maxMoves);
+        board = left(board);
+        printMatrix(board);
+        //solve2048(board, maxMoves);
         // if(best == -1){
         //     std::cout << "no solution\n";
         // }
