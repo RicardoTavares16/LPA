@@ -203,12 +203,12 @@ void solve2048(int **board, int moves)
     moves--;
     if (is_solved(board))
     {
-        std::cout << "SOLVED " << moves << "\n";
+        std::cout << "SOLVED " << moves << " moves left\n";
         return;
     }
     if (moves >= 0)
     {
-        std::cout << "Calling on " << moves << " move\n";
+        //std::cout << "Calling on " << moves << " move\n";
         solve2048(left(board), moves);
         solve2048(right(board), moves);
         solve2048(up(board), moves);
@@ -248,13 +248,13 @@ int main()
             }
             std::cout << "\n";
         }
-        
-        printMatrix(board);
-        board = left(board);
-        std::cout << "After move\n";
-        printMatrix(board);
 
-        //solve2048(board, maxMoves);
+        // printMatrix(board);
+        // board = left(board);
+        // std::cout << "After move\n";
+        // printMatrix(board);
+
+        solve2048(board, maxMoves);
         // if(best == -1){
         //     std::cout << "no solution\n";
         // }
