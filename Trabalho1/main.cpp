@@ -4,12 +4,18 @@
 #include <sstream>
 #include <cstring>
 
-int **gameBoard;
 int boardSize, maxMoves;
 int best;
 bool found = false;
 
-void printMatrix(int **board)
+typedef struct {
+	int tiles[20][20];
+} matrix;
+
+matrix gameBoard; 
+
+
+void printMatrix(matrix board)
 {
     int row, col;
     // int boardSizeCheck = sizeof(board[0])/sizeof(board[0][0]);
@@ -20,38 +26,20 @@ void printMatrix(int **board)
         fprintf(stdout, "\t     |");
         for (col = 0; col < boardSize; col++)
         {
-            printf("%4d    |", board[row][col]);
+            printf("%4d    |", board.tiles[row][col]);
         }
         fprintf(stdout, "\n\n");
     }
 };
 
-void alloc()
-{
-    gameBoard = new int *[boardSize];
-    for (int i = 0; i < boardSize; ++i)
-    {
-        gameBoard[i] = new int[boardSize];
-    }
-}
-
-void clear()
-{
-    for (int i = 0; i < boardSize; ++i)
-    {
-        delete[] gameBoard[i];
-    }
-    delete[] gameBoard;
-}
-
-int is_solved(int **board)
+int is_solved(matrix board)
 {
     int count = 0;
     for (int i = 0; i < boardSize; i++)
     {
         for (int j = 0; j < boardSize; j++)
         {
-            if (board[i][j] > 0)
+            if (board.tiles[i][j] > 0)
                 count++;
             if (count > 1)
                 return 0;
@@ -60,25 +48,42 @@ int is_solved(int **board)
     return 1;
 }
 
-int **fall(int **board)
+matrix fall(matrix board)
 {
     int i, j, k, temp;
+    for(i = boardSize -1; i >= 0; i--){
+        for(j = boardSize -1; j >= 0; j--){
+            if(board.tiles[j][i]){
+                temp = board.tiles[j][i];
+                k = j-1;
+                while(k >= 0){
+                    if(board.tiles[k][i]){
+                        if(board.tiles[k][i] == board.tiles[j][i]){
+                            board.tiles[j][i] *= 2;
+                            board.tiles[k][i] = 0;
+                        }
+                        break;
+                    }
+                    k--;
+                }
+            }
+        }
+    }
 
-    // migrate zeros to backward
     for (i = 0; i < boardSize; ++i)
     {
         j = boardSize - 1;
         k = boardSize - 2;
         while (k > -1)
         {
-            if (board[j][i] == 0 && board[k][i] != 0)
+            if (board.tiles[j][i] == 0 && board.tiles[k][i] != 0)
             {
-                temp = board[k][i];
-                board[k][i] = board[j][i];
-                board[j][i] = temp;
+                temp = board.tiles[k][i];
+                board.tiles[k][i] = board.tiles[j][i];
+                board.tiles[j][i] = temp;
                 j--;
             }
-            else if (board[j][i])
+            else if (board.tiles[j][i])
             {
                 j--;
             }
@@ -86,152 +91,93 @@ int **fall(int **board)
         }
     }
 
-    // resolve
-    for (i = boardSize - 2; i >= 0; --i)
-    {
-        for (j = 0; j < boardSize; ++j)
-        {
-            if (board[i][j] == board[i + 1][j])
-            {
-                board[i + 1][j] = board[i][j] * 2;
-                board[i][j] = 0;
-            }
-            else if (board[i + 1][j] == 0)
-            {
-                board[i + 1][j] = board[i][j];
-                board[i][j] = 0;
-            }
-            else
-            {
-                board[i][j] = board[i][j];
-            }
-        }
-    }
-
     return board;
 }
 
-int **upside_down(int **board)
+matrix upsideDown(matrix board)
 {
     int temp;
     for (int i = 0; i < boardSize / 2; ++i)
     {
         for (int j = 0; j < boardSize; ++j)
         {
-            temp = board[i][j];
-            board[i][j] = board[boardSize - i - 1][j];
-            board[boardSize - i - 1][j] = temp;
+            temp = board.tiles[i][j];
+            board.tiles[i][j] = board.tiles[boardSize - i - 1][j];
+            board.tiles[boardSize - i - 1][j] = temp;
         }
     }
     return board;
 }
 
-int **rotate_right(int **board)
+matrix rotateRight(matrix board)
 {
-    int **g2 = new int *[boardSize];
-    for (int i = 0; i < boardSize; i++)
-    {
-        g2[i] = new int[boardSize];
-    }
-
+    matrix g2;
     for (int i = 0; i < boardSize; ++i)
     {
         for (int j = 0; j < boardSize; ++j)
         {
-            g2[boardSize - 1 - j][i] = board[i][j];
+            g2.tiles[boardSize - 1 - j][i] = board.tiles[i][j];
         }
     }
-
-    memcpy(board, g2, sizeof(int) * boardSize * boardSize);
-
-    free(g2);
+    memcpy(board.tiles, g2.tiles, sizeof(int) * 20 * 20);
     return board;
 }
 
-int **rotate_left(int **board)
+matrix rotateLeft(matrix board)
 {
-    int **g2 = new int *[boardSize];
-    for (int i = 0; i < boardSize; i++)
-    {
-        g2[i] = new int[boardSize];
-    }
-
+    matrix g2;
     for (int i = 0; i < boardSize; ++i)
     {
         for (int j = 0; j < boardSize; ++j)
         {
-            g2[i][j] = board[boardSize - 1 - j][i];
+            g2.tiles[i][j] = board.tiles[boardSize - 1 - j][i];
         }
     }
-
-    memcpy(board, g2, sizeof(int) * boardSize * boardSize);
-
-    free(g2);
+    memcpy(board.tiles, g2.tiles, sizeof(int) * 20 * 20);
     return board;
 }
 
-int **up(int **board)
+matrix up(matrix board)
 {
-    board = upside_down(board);
+    board = upsideDown(board);
     board = fall(board);
-    board = upside_down(board);
+    board = upsideDown(board);
     return board;
 }
 
-int **down(int **board)
+matrix down(matrix board)
 {
     board = fall(board);
     return board;
 }
 
-int **left(int **board)
+matrix left(matrix board)
 {
-    board = rotate_right(board);
+    board = rotateRight(board);
     board = fall(board);
-    board = rotate_left(board);
+    board = rotateLeft(board);
     return board;
 }
 
-int **right(int **board)
+matrix right(matrix board)
 {
-    board = rotate_left(board);
+    board = rotateLeft(board);
     board = fall(board);
-    board = rotate_right(board);
+    board = rotateRight(board);
     return board;
 }
 
-int max(int a, int b, int c, int d) {
-  int max = a;
-
-  if (b > max) {
-    max = b;
-  }
-
-  if (c > max) {
-    max = c;
-  }
-
-  if (d > max) {
-    max = d;
-  }
-
-  return max;
-}
-
-void solve2048(int **board, int play)
+void solve2048(matrix board, int play)
 {
     if (is_solved(board))
     {
         //std::cout << "SOLVED " << play << " play\n";
         if(play < best){
             best = play;
-            std::cout << "Original board: \n";
-            printMatrix(gameBoard);
-            std::cout << "play: " << play << "\n";
-            printMatrix(board);
-            return;
+            //std::cout << "play: " << play << "\n";
         }
         found = true;
+        return;
     }
     if (play < best)
     {
@@ -240,7 +186,6 @@ void solve2048(int **board, int play)
         solve2048(right(board), play+1); 
         solve2048(up(board), play+1); 
         solve2048(down(board), play+1);
-       
     }
 }
 
@@ -253,8 +198,7 @@ int main()
     for (int i = 0; i < testCases; i++)
     {
         std::cin >> boardSize >> maxMoves;
-        std::cout << "Board: " << boardSize << " Moves: " << maxMoves << "\n";
-        alloc();
+        //std::cout << "Board: " << boardSize << " Moves: " << maxMoves << "\n";
 
         for (int j = 0; j < boardSize; j++)
         {
@@ -266,17 +210,17 @@ int main()
                 std::istringstream iss(line);
                 while (iss >> inputNumber)
                 {
-                    gameBoard[j][a] = inputNumber;
-                    std::cout << inputNumber;
+                    gameBoard.tiles[j][a] = inputNumber;
+                    //std::cout << inputNumber;
                 }
             }
-            std::cout << "\n";
+            //std::cout << "\n";
         }
 
-        // printMatrix(board);
-        // board = left(board);
+        // printMatrix(gameBoard);
+        // gameBoard = down(gameBoard);
         // std::cout << "After move\n";
-        // printMatrix(board);
+        // printMatrix(gameBoard);
 
         best = maxMoves;
         found = false;
@@ -288,6 +232,5 @@ int main()
             std::cout << best << "\n";
         }
 
-        clear();
     }
 }
