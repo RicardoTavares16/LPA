@@ -48,7 +48,7 @@ int is_solved(matrix board)
     return 1;
 }
 
-matrix fall(matrix board)
+matrix down(matrix board)
 {
     int i, j, k, temp;
     for (i = boardSize - 1; i >= 0; i--)
@@ -100,76 +100,159 @@ matrix fall(matrix board)
     return board;
 }
 
-matrix upsideDown(matrix board)
-{
-    int temp;
-    for (int i = 0; i < boardSize / 2; ++i)
-    {
-        for (int j = 0; j < boardSize; ++j)
-        {
-            temp = board.tiles[i][j];
-            board.tiles[i][j] = board.tiles[boardSize - i - 1][j];
-            board.tiles[boardSize - i - 1][j] = temp;
-        }
-    }
-    return board;
-}
-
-matrix rotateRight(matrix board)
-{
-    matrix g2;
-    for (int i = 0; i < boardSize; ++i)
-    {
-        for (int j = 0; j < boardSize; ++j)
-        {
-            g2.tiles[boardSize - 1 - j][i] = board.tiles[i][j];
-        }
-    }
-    memcpy(board.tiles, g2.tiles, sizeof(int) * 20 * 20);
-    return board;
-}
-
-matrix rotateLeft(matrix board)
-{
-    matrix g2;
-    for (int i = 0; i < boardSize; ++i)
-    {
-        for (int j = 0; j < boardSize; ++j)
-        {
-            g2.tiles[i][j] = board.tiles[boardSize - 1 - j][i];
-        }
-    }
-    memcpy(board.tiles, g2.tiles, sizeof(int) * 20 * 20);
-    return board;
-}
-
 matrix up(matrix board)
 {
-    board = upsideDown(board);
-    board = fall(board);
-    board = upsideDown(board);
-    return board;
-}
+    int i, j, k, temp;
+    for (i = 0; i < boardSize; i++)
+    {
+        for (j = 0; j < boardSize; j++)
+        {
+            if (board.tiles[j][i])
+            {
+                temp = board.tiles[j][i];
+                k = j + 1;
+                while (k < boardSize)
+                {
+                    if (board.tiles[k][i])
+                    {
+                        if (board.tiles[k][i] == board.tiles[j][i])
+                        {
+                            board.tiles[j][i] *= 2;
+                            board.tiles[k][i] = 0;
+                        }
+                        break;
+                    }
+                    k++;
+                }
+            }
+        }
+    }
 
-matrix down(matrix board)
-{
-    board = fall(board);
+    for (i = 0; i < boardSize; ++i)
+    {
+        j = 0;
+        k = 1;
+        while (k < boardSize)
+        {
+            if (board.tiles[j][i] == 0 && board.tiles[k][i] != 0)
+            {
+                temp = board.tiles[k][i];
+                board.tiles[k][i] = board.tiles[j][i];
+                board.tiles[j][i] = temp;
+                j++;
+            }
+            else if (board.tiles[j][i])
+            {
+                j++;
+            }
+            k++;
+        }
+    }
+
     return board;
 }
 
 matrix left(matrix board)
 {
-    board = rotateRight(board);
-    board = fall(board);
-    board = rotateLeft(board);
+    int i, j, k, temp;
+    for (i = 0; i < boardSize; i++)
+    {
+        for (j = 0; j < boardSize; j++)
+        {
+            if (board.tiles[i][j])
+            {
+                temp = board.tiles[i][j];
+                k = j + 1;
+                while (k < boardSize)
+                {
+                    if (board.tiles[i][k])
+                    {
+                        if (board.tiles[i][k] == board.tiles[i][j])
+                        {
+                            board.tiles[i][j] *= 2;
+                            board.tiles[i][k] = 0;
+                        }
+                        break;
+                    }
+                    k++;
+                }
+            }
+        }
+    }
+
+    for (i = 0; i < boardSize; ++i)
+    {
+        j = 0;
+        k = 1;
+        while (k < boardSize)
+        {
+            if (board.tiles[i][j] == 0 && board.tiles[i][k] != 0)
+            {
+                temp = board.tiles[i][k];
+                board.tiles[i][k] = board.tiles[i][j];
+                board.tiles[i][j] = temp;
+                j++;
+            }
+            else if (board.tiles[i][j])
+            {
+                j++;
+            }
+            k++;
+        }
+    }
+
     return board;
 }
 
 matrix right(matrix board)
 {
-    board = rotateLeft(board);
-    board = fall(board);
-    board = rotateRight(board);
+    int i, j, k, temp;
+    for (i = boardSize - 1; i >= 0; i--)
+    {
+        for (j = boardSize - 1; j >= 0; j--)
+        {
+            if (board.tiles[i][j])
+            {
+                temp = board.tiles[i][j];
+                k = j - 1;
+                while (k >= 0)
+                {
+                    if (board.tiles[i][k])
+                    {
+                        if (board.tiles[i][k] == board.tiles[i][j])
+                        {
+                            board.tiles[i][j] *= 2;
+                            board.tiles[i][k] = 0;
+                        }
+                        break;
+                    }
+                    k--;
+                }
+            }
+        }
+    }
+
+    for (i = 0; i < boardSize; ++i)
+    {
+        j = boardSize - 1;
+        k = boardSize - 2;
+        while (k > -1)
+        {
+            if (board.tiles[i][j] == 0 && board.tiles[i][k] != 0)
+            {
+                temp = board.tiles[i][k];
+                board.tiles[i][k] = board.tiles[i][j];
+                board.tiles[i][j] = temp;
+                j--;
+            }
+            else if (board.tiles[i][j])
+            {
+                j--;
+            }
+            k--;
+        }
+    }
+
     return board;
 }
 
@@ -224,7 +307,7 @@ int main()
         }
 
         // printMatrix(gameBoard);
-        // gameBoard = down(gameBoard);
+        // gameBoard = right(gameBoard);
         // std::cout << "After move\n";
         // printMatrix(gameBoard);
 
