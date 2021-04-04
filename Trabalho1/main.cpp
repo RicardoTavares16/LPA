@@ -4,8 +4,10 @@
 #include <sstream>
 #include <cstring>
 
-int **board;
+int **gameBoard;
 int boardSize, maxMoves;
+int best;
+bool found = false;
 
 void printMatrix(int **board)
 {
@@ -26,10 +28,10 @@ void printMatrix(int **board)
 
 void alloc()
 {
-    board = new int *[boardSize];
+    gameBoard = new int *[boardSize];
     for (int i = 0; i < boardSize; ++i)
     {
-        board[i] = new int[boardSize];
+        gameBoard[i] = new int[boardSize];
     }
 }
 
@@ -37,9 +39,9 @@ void clear()
 {
     for (int i = 0; i < boardSize; ++i)
     {
-        delete[] board[i];
+        delete[] gameBoard[i];
     }
-    delete[] board;
+    delete[] gameBoard;
 }
 
 int is_solved(int **board)
@@ -216,25 +218,29 @@ int max(int a, int b, int c, int d) {
   return max;
 }
 
-int solve2048(int **board, int moves)
+void solve2048(int **board, int play)
 {
-    moves--;
-    int best = -2;
     if (is_solved(board))
     {
-        //std::cout << "SOLVED " << moves << " moves left\n";
-        best = moves;
-        return best;
+        //std::cout << "SOLVED " << play << " play\n";
+        if(play < best){
+            best = play;
+            std::cout << "Original board: \n";
+            printMatrix(gameBoard);
+            std::cout << "play: " << play << "\n";
+            printMatrix(board);
+            return;
+        }
+        found = true;
     }
-    if (moves >= 0)
+    if (play < best)
     {
-        //std::cout << "Calling on " << moves << " move\n";
-        best = max(solve2048(left(board), moves), solve2048(right(board), moves), solve2048(up(board), moves), solve2048(down(board), moves));
-        return best;
-    }
-    else
-    {
-        return -1;
+        //std::cout << "Calling on " << play << " move\n";
+        solve2048(left(board), play+1); 
+        solve2048(right(board), play+1); 
+        solve2048(up(board), play+1); 
+        solve2048(down(board), play+1);
+       
     }
 }
 
@@ -260,7 +266,7 @@ int main()
                 std::istringstream iss(line);
                 while (iss >> inputNumber)
                 {
-                    board[j][a] = inputNumber;
+                    gameBoard[j][a] = inputNumber;
                     std::cout << inputNumber;
                 }
             }
@@ -272,8 +278,10 @@ int main()
         // std::cout << "After move\n";
         // printMatrix(board);
 
-        int best = solve2048(board, maxMoves);
-        if(best == -1){
+        best = maxMoves;
+        found = false;
+        solve2048(gameBoard, 0);
+        if(found == false){
             std::cout << "no solution\n";
         }
         else{
