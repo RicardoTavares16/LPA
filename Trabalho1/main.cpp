@@ -36,7 +36,16 @@ void clear() {
 	    free(board);
 }
 
-
+int is_solved(int** board) {
+	int count = 0;
+	for (int i = 0; i < boardSize; i++) {
+		for (int j = 0; j < boardSize; j++) {
+			if (board[i][j] > 0) count++;
+			if (count > 1) return 0;
+		}
+	}
+	return 1;
+}
 
 int** fall(int** board) {
     int i, j, k, temp;
@@ -152,13 +161,21 @@ int** right(int** board) {
     return board;
 }
 
-int solve2048(int** board, int moves) {
+void solve2048(int** board, int moves) {
     moves--;
+    if(is_solved(board)){
+        std::cout << "SOLVED " << moves << "\n";
+        return;
+    }
     if(moves >= 0) {
-        return solve2048(board, moves);
+        std::cout << "Calling on " << moves << " move\n";
+        solve2048(left(board), moves);
+        solve2048(right(board), moves);
+        solve2048(up(board), moves);
+        solve2048(down(board), moves);
     }
     else {
-        return -1;
+        return;
     }
 }
 
@@ -190,12 +207,12 @@ int main()
             }
             std::cout << "\n";
         }
-        printMatrix(board);
-        std::cout << "Fall\n";
+        //printMatrix(board);
+        //std::cout << "Fall\n";
         //solve2048(board, maxMoves);
-        board = right(board);
-        printMatrix(board);
-        // int best = solve2048(maxMoves);
+        //board = right(board);
+        //printMatrix(board);
+        solve2048(board, maxMoves);
         // if(best == -1){
         //     std::cout << "no solution\n";
         // }
