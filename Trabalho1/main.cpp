@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <string>
 #include <sstream>
+#include <cstring>
 
 int** board;
 int boardSize, maxMoves;
@@ -35,17 +36,9 @@ void clear() {
 	    free(board);
 }
 
-int solve2048(int moves) {
-    moves--;
-    if(moves >= 0) {
-        return solve2048(moves);
-    }
-    else {
-        return -1;
-    }
-}
 
-void fall() {
+
+int** fall(int** board) {
     int i, j, k, temp;
 
     // migrate zeros to backward
@@ -81,9 +74,11 @@ void fall() {
             }
         }
     }
+
+    return board;
 }
 
-void upside_down() {
+int** upside_down(int** board) {
     int temp;
     for(int i = 0; i < boardSize / 2; ++i) {
         for(int j = 0; j < boardSize; ++j) {
@@ -92,16 +87,79 @@ void upside_down() {
             board[boardSize-i-1][j] = temp;
         }
     }
+    return board;
 }
 
-void up() {
-    upside_down();
-    fall();
-    upside_down();
+int** rotate_right(int** board) {
+    int** g2 = new int*[boardSize];
+    for(int i = 0; i < boardSize; i++){
+        g2[i] = new int[boardSize];
+    }
+
+    for(int i = 0; i < boardSize; ++i) {
+        for(int j = 0; j < boardSize; ++j) {
+            g2[boardSize-1-j][i] = board[i][j];
+        }
+    }
+
+    memcpy(board, g2, sizeof(int) * boardSize * boardSize);
+    
+    free(g2);
+    return board;
 }
 
-void down() {
-    fall();
+int** rotate_left(int** board) {
+    int** g2 = new int*[boardSize];
+    for(int i = 0; i < boardSize; i++){
+        g2[i] = new int[boardSize];
+    }
+
+    for(int i = 0; i < boardSize; ++i) {
+        for(int j = 0; j < boardSize; ++j) {
+            g2[i][j] = board[boardSize-1-j][i];
+        }
+    }
+
+    memcpy(board, g2, sizeof(int) * boardSize * boardSize);
+
+    free(g2);
+    return board;
+}
+
+int** up(int** board) {
+    board = upside_down(board);
+    board = fall(board);
+    board = upside_down(board);
+    return board;
+}
+
+int** down(int** board) {
+    board = fall(board);
+    return board;
+}
+
+int** left(int** board) {
+    board = rotate_right(board);
+    board = fall(board);
+    board = rotate_left(board);
+    return board;
+}
+
+int** right(int** board) {
+    board = rotate_left(board);
+    board = fall(board);
+    board = rotate_right(board);
+    return board;
+}
+
+int solve2048(int** board, int moves) {
+    moves--;
+    if(moves >= 0) {
+        return solve2048(board, moves);
+    }
+    else {
+        return -1;
+    }
 }
 
 int main()
@@ -134,7 +192,8 @@ int main()
         }
         printMatrix(board);
         std::cout << "Fall\n";
-        up();
+        //solve2048(board, maxMoves);
+        board = right(board);
         printMatrix(board);
         // int best = solve2048(maxMoves);
         // if(best == -1){
