@@ -248,11 +248,12 @@ int main()
             }
             std::cout << "\n";
         }
+        
         printMatrix(board);
-        std::cout << "Fall\n";
-        //solve2048(board, maxMoves);
         board = left(board);
+        std::cout << "After move\n";
         printMatrix(board);
+
         //solve2048(board, maxMoves);
         // if(best == -1){
         //     std::cout << "no solution\n";
