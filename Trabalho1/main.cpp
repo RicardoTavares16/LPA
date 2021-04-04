@@ -8,12 +8,12 @@ int boardSize, maxMoves;
 int best;
 bool found = false;
 
-typedef struct {
-	int tiles[20][20];
+typedef struct
+{
+    int tiles[20][20];
 } matrix;
 
-matrix gameBoard; 
-
+matrix gameBoard;
 
 void printMatrix(matrix board)
 {
@@ -51,14 +51,20 @@ int is_solved(matrix board)
 matrix fall(matrix board)
 {
     int i, j, k, temp;
-    for(i = boardSize -1; i >= 0; i--){
-        for(j = boardSize -1; j >= 0; j--){
-            if(board.tiles[j][i]){
+    for (i = boardSize - 1; i >= 0; i--)
+    {
+        for (j = boardSize - 1; j >= 0; j--)
+        {
+            if (board.tiles[j][i])
+            {
                 temp = board.tiles[j][i];
-                k = j-1;
-                while(k >= 0){
-                    if(board.tiles[k][i]){
-                        if(board.tiles[k][i] == board.tiles[j][i]){
+                k = j - 1;
+                while (k >= 0)
+                {
+                    if (board.tiles[k][i])
+                    {
+                        if (board.tiles[k][i] == board.tiles[j][i])
+                        {
                             board.tiles[j][i] *= 2;
                             board.tiles[k][i] = 0;
                         }
@@ -172,7 +178,8 @@ void solve2048(matrix board, int play)
     if (is_solved(board))
     {
         //std::cout << "SOLVED " << play << " play\n";
-        if(play < best){
+        if (play < best)
+        {
             best = play;
             //std::cout << "play: " << play << "\n";
         }
@@ -182,16 +189,15 @@ void solve2048(matrix board, int play)
     if (play < best)
     {
         //std::cout << "Calling on " << play << " move\n";
-        solve2048(left(board), play+1); 
-        solve2048(right(board), play+1); 
-        solve2048(up(board), play+1); 
-        solve2048(down(board), play+1);
+        solve2048(left(board), play + 1);
+        solve2048(right(board), play + 1);
+        solve2048(up(board), play + 1);
+        solve2048(down(board), play + 1);
     }
 }
 
 int main()
 {
-
     int testCases;
     std::cin >> testCases;
 
@@ -225,12 +231,13 @@ int main()
         best = maxMoves;
         found = false;
         solve2048(gameBoard, 0);
-        if(found == false){
+        if (found == false)
+        {
             std::cout << "no solution\n";
         }
-        else{
+        else
+        {
             std::cout << best << "\n";
         }
-
     }
 }
