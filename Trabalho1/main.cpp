@@ -198,25 +198,43 @@ int **right(int **board)
     return board;
 }
 
-void solve2048(int **board, int moves)
+int max(int a, int b, int c, int d) {
+  int max = a;
+
+  if (b > max) {
+    max = b;
+  }
+
+  if (c > max) {
+    max = c;
+  }
+
+  if (d > max) {
+    max = d;
+  }
+
+  return max;
+}
+
+int solve2048(int **board, int moves)
 {
     moves--;
+    int best = -2;
     if (is_solved(board))
     {
-        std::cout << "SOLVED " << moves << " moves left\n";
-        return;
+        //std::cout << "SOLVED " << moves << " moves left\n";
+        best = moves;
+        return best;
     }
     if (moves >= 0)
     {
         //std::cout << "Calling on " << moves << " move\n";
-        solve2048(left(board), moves);
-        solve2048(right(board), moves);
-        solve2048(up(board), moves);
-        solve2048(down(board), moves);
+        best = max(solve2048(left(board), moves), solve2048(right(board), moves), solve2048(up(board), moves), solve2048(down(board), moves));
+        return best;
     }
     else
     {
-        return;
+        return -1;
     }
 }
 
@@ -254,13 +272,13 @@ int main()
         // std::cout << "After move\n";
         // printMatrix(board);
 
-        solve2048(board, maxMoves);
-        // if(best == -1){
-        //     std::cout << "no solution\n";
-        // }
-        // else{
-        //     std::cout << best << "\n";
-        // }
+        int best = solve2048(board, maxMoves);
+        if(best == -1){
+            std::cout << "no solution\n";
+        }
+        else{
+            std::cout << best << "\n";
+        }
 
         clear();
     }
