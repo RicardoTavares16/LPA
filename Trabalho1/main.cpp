@@ -71,6 +71,7 @@ matrix down(matrix board)
                             didNothing = false;
                             board.tiles[j][i] *= 2;
                             board.tiles[k][i] = 0;
+                            j = k;
                         }
                         break;
                     }
@@ -127,6 +128,7 @@ matrix up(matrix board)
                             didNothing = false;
                             board.tiles[j][i] *= 2;
                             board.tiles[k][i] = 0;
+                            j = k;
                         }
                         break;
                     }
@@ -183,6 +185,7 @@ matrix left(matrix board)
                             didNothing = false;
                             board.tiles[i][j] *= 2;
                             board.tiles[i][k] = 0;
+                            j = k;
                         }
                         break;
                     }
@@ -239,6 +242,7 @@ matrix right(matrix board)
                             didNothing = false;
                             board.tiles[i][j] *= 2;
                             board.tiles[i][k] = 0;
+                            j = k;
                         }
                         break;
                     }
