@@ -7,15 +7,16 @@
 int boardSize, maxMoves;
 int best;
 bool found = false;
+bool didNothing = true;
 
 typedef struct
 {
     int tiles[20][20];
 } matrix;
 
-matrix *gameBoard;
+matrix gameBoard;
 
-void printMatrix(matrix *board)
+void printMatrix(matrix board)
 {
     int row, col;
     // int boardSizeCheck = sizeof(board[0])/sizeof(board[0][0]);
@@ -26,20 +27,20 @@ void printMatrix(matrix *board)
         fprintf(stdout, "\t     |");
         for (col = 0; col < boardSize; col++)
         {
-            printf("%4d    |", board->tiles[row][col]);
+            printf("%4d    |", board.tiles[row][col]);
         }
         fprintf(stdout, "\n\n");
     }
 };
 
-int is_solved(matrix *board)
+int is_solved(matrix board)
 {
     int count = 0;
     for (int i = 0; i < boardSize; i++)
     {
         for (int j = 0; j < boardSize; j++)
         {
-            if (board->tiles[i][j] > 0)
+            if (board.tiles[i][j] > 0)
                 count++;
             if (count > 1)
                 return 0;
@@ -48,36 +49,28 @@ int is_solved(matrix *board)
     return 1;
 }
 
-matrix *copy_board(matrix *board)
+matrix down(matrix board)
 {
-    matrix *copy = new matrix();
-    memcpy(copy->tiles, board, sizeof(copy->tiles));
-    return copy;
-}
-
-matrix *down(matrix *originalBoard)
-{
-    matrix *board = copy_board(originalBoard);
     int i, j, k, temp;
-    bool didNothing = true;
+    didNothing = true;
 
     for (i = boardSize - 1; i >= 0; i--)
     {
         for (j = boardSize - 1; j >= 0; j--)
         {
-            if (board->tiles[j][i])
+            if (board.tiles[j][i])
             {
-                temp = board->tiles[j][i];
+                temp = board.tiles[j][i];
                 k = j - 1;
                 while (k >= 0)
                 {
-                    if (board->tiles[k][i])
+                    if (board.tiles[k][i])
                     {
-                        if (board->tiles[k][i] == board->tiles[j][i])
+                        if (board.tiles[k][i] == board.tiles[j][i])
                         {
                             didNothing = false;
-                            board->tiles[j][i] *= 2;
-                            board->tiles[k][i] = 0;
+                            board.tiles[j][i] *= 2;
+                            board.tiles[k][i] = 0;
                         }
                         break;
                     }
@@ -93,15 +86,15 @@ matrix *down(matrix *originalBoard)
         k = boardSize - 2;
         while (k > -1)
         {
-            if (board->tiles[j][i] == 0 && board->tiles[k][i] != 0)
+            if (board.tiles[j][i] == 0 && board.tiles[k][i] != 0)
             {
                 didNothing = false;
-                temp = board->tiles[k][i];
-                board->tiles[k][i] = board->tiles[j][i];
-                board->tiles[j][i] = temp;
+                temp = board.tiles[k][i];
+                board.tiles[k][i] = board.tiles[j][i];
+                board.tiles[j][i] = temp;
                 j--;
             }
-            else if (board->tiles[j][i])
+            else if (board.tiles[j][i])
             {
                 j--;
             }
@@ -109,37 +102,31 @@ matrix *down(matrix *originalBoard)
         }
     }
 
-    if (didNothing)
-    {
-        return NULL;
-    }
-
     return board;
 }
 
-matrix *up(matrix *originalBoard)
+matrix up(matrix board)
 {
-    matrix *board = copy_board(originalBoard);
     int i, j, k, temp;
-    bool didNothing = true;
+    didNothing = true;
 
     for (i = 0; i < boardSize; i++)
     {
         for (j = 0; j < boardSize; j++)
         {
-            if (board->tiles[j][i])
+            if (board.tiles[j][i])
             {
-                temp = board->tiles[j][i];
+                temp = board.tiles[j][i];
                 k = j + 1;
                 while (k < boardSize)
                 {
-                    if (board->tiles[k][i])
+                    if (board.tiles[k][i])
                     {
-                        if (board->tiles[k][i] == board->tiles[j][i])
+                        if (board.tiles[k][i] == board.tiles[j][i])
                         {
                             didNothing = false;
-                            board->tiles[j][i] *= 2;
-                            board->tiles[k][i] = 0;
+                            board.tiles[j][i] *= 2;
+                            board.tiles[k][i] = 0;
                         }
                         break;
                     }
@@ -155,15 +142,15 @@ matrix *up(matrix *originalBoard)
         k = 1;
         while (k < boardSize)
         {
-            if (board->tiles[j][i] == 0 && board->tiles[k][i] != 0)
+            if (board.tiles[j][i] == 0 && board.tiles[k][i] != 0)
             {
                 didNothing = false;
-                temp = board->tiles[k][i];
-                board->tiles[k][i] = board->tiles[j][i];
-                board->tiles[j][i] = temp;
+                temp = board.tiles[k][i];
+                board.tiles[k][i] = board.tiles[j][i];
+                board.tiles[j][i] = temp;
                 j++;
             }
-            else if (board->tiles[j][i])
+            else if (board.tiles[j][i])
             {
                 j++;
             }
@@ -171,37 +158,31 @@ matrix *up(matrix *originalBoard)
         }
     }
 
-    if (didNothing)
-    {
-        return NULL;
-    }
-
     return board;
 }
 
-matrix *left(matrix *originalBoard)
+matrix left(matrix board)
 {
-    matrix *board = copy_board(originalBoard);
     int i, j, k, temp;
-    bool didNothing = true;
+    didNothing = true;
 
     for (i = 0; i < boardSize; i++)
     {
         for (j = 0; j < boardSize; j++)
         {
-            if (board->tiles[i][j])
+            if (board.tiles[i][j])
             {
-                temp = board->tiles[i][j];
+                temp = board.tiles[i][j];
                 k = j + 1;
                 while (k < boardSize)
                 {
-                    if (board->tiles[i][k])
+                    if (board.tiles[i][k])
                     {
-                        if (board->tiles[i][k] == board->tiles[i][j])
+                        if (board.tiles[i][k] == board.tiles[i][j])
                         {
                             didNothing = false;
-                            board->tiles[i][j] *= 2;
-                            board->tiles[i][k] = 0;
+                            board.tiles[i][j] *= 2;
+                            board.tiles[i][k] = 0;
                         }
                         break;
                     }
@@ -217,15 +198,15 @@ matrix *left(matrix *originalBoard)
         k = 1;
         while (k < boardSize)
         {
-            if (board->tiles[i][j] == 0 && board->tiles[i][k] != 0)
+            if (board.tiles[i][j] == 0 && board.tiles[i][k] != 0)
             {
                 didNothing = false;
-                temp = board->tiles[i][k];
-                board->tiles[i][k] = board->tiles[i][j];
-                board->tiles[i][j] = temp;
+                temp = board.tiles[i][k];
+                board.tiles[i][k] = board.tiles[i][j];
+                board.tiles[i][j] = temp;
                 j++;
             }
-            else if (board->tiles[i][j])
+            else if (board.tiles[i][j])
             {
                 j++;
             }
@@ -233,37 +214,31 @@ matrix *left(matrix *originalBoard)
         }
     }
 
-    if (didNothing)
-    {
-        return NULL;
-    }
-
     return board;
 }
 
-matrix *right(matrix *originalBoard)
+matrix right(matrix board)
 {
-    matrix *board = copy_board(originalBoard);
     int i, j, k, temp;
-    bool didNothing = true;
+    didNothing = true;
 
     for (i = boardSize - 1; i >= 0; i--)
     {
         for (j = boardSize - 1; j >= 0; j--)
         {
-            if (board->tiles[i][j])
+            if (board.tiles[i][j])
             {
-                temp = board->tiles[i][j];
+                temp = board.tiles[i][j];
                 k = j - 1;
                 while (k >= 0)
                 {
-                    if (board->tiles[i][k])
+                    if (board.tiles[i][k])
                     {
-                        if (board->tiles[i][k] == board->tiles[i][j])
+                        if (board.tiles[i][k] == board.tiles[i][j])
                         {
                             didNothing = false;
-                            board->tiles[i][j] *= 2;
-                            board->tiles[i][k] = 0;
+                            board.tiles[i][j] *= 2;
+                            board.tiles[i][k] = 0;
                         }
                         break;
                     }
@@ -279,15 +254,15 @@ matrix *right(matrix *originalBoard)
         k = boardSize - 2;
         while (k > -1)
         {
-            if (board->tiles[i][j] == 0 && board->tiles[i][k] != 0)
+            if (board.tiles[i][j] == 0 && board.tiles[i][k] != 0)
             {
                 didNothing = false;
-                temp = board->tiles[i][k];
-                board->tiles[i][k] = board->tiles[i][j];
-                board->tiles[i][j] = temp;
+                temp = board.tiles[i][k];
+                board.tiles[i][k] = board.tiles[i][j];
+                board.tiles[i][j] = temp;
                 j--;
             }
-            else if (board->tiles[i][j])
+            else if (board.tiles[i][j])
             {
                 j--;
             }
@@ -295,51 +270,70 @@ matrix *right(matrix *originalBoard)
         }
     }
 
-    if (didNothing)
-    {
-        return NULL;
-    }
-
     return board;
 }
 
-void solve2048(matrix *board, int play)
+void solve2048(matrix board, int play)
 {
-    if (is_solved(board))
-    {
-        //std::cout << "SOLVED " << play << " play\n";
-        if (play < best)
-        {
-            best = play;
-            //std::cout << "play: " << play << "\n";
-        }
-        found = true;
-        return;
-    }
     if (play < best)
     {
-        matrix *leftMatrix = left(board);
-        matrix *rightMatrix = right(board);
-        matrix *upMatrix = up(board);
-        matrix *downMatrix = down(board);
         //std::cout << "Calling on " << play << " move\n";
-        if (leftMatrix != NULL)
+        matrix leftMatrix = left(board);
+        if (is_solved(leftMatrix))
+        {
+            if (play < best)
+            {
+                best = play;
+            }
+            found = true;
+            return;
+        }
+        if (!didNothing)
         {
             solve2048(leftMatrix, play + 1);
         }
-        if (rightMatrix != NULL)
+        matrix rightMatrix = right(board);
+        if (is_solved(rightMatrix))
+        {
+            if (play < best)
+            {
+                best = play;
+            }
+            found = true;
+            return;
+        }
+        if (!didNothing)
         {
             solve2048(rightMatrix, play + 1);
         }
-        if (upMatrix != NULL)
+        matrix upMatrix = up(board);
+        if (is_solved(upMatrix))
+        {
+            if (play < best)
+            {
+                best = play;
+            }
+            found = true;
+            return;
+        }
+        if (!didNothing)
         {
             solve2048(upMatrix, play + 1);
         }
-        if (downMatrix != NULL)
+        matrix downMatrix = down(board);
+        if (is_solved(downMatrix))
+        {
+            if (play < best)
+            {
+                best = play;
+            }
+            found = true;
+            return;
+        }
+        if (!didNothing)
         {
             solve2048(downMatrix, play + 1);
         }
-        free(board);
     }
 }
 
@@ -352,7 +346,6 @@ int main()
     {
         std::cin >> boardSize >> maxMoves;
         //std::cout << "Board: " << boardSize << " Moves: " << maxMoves << "\n";
-        gameBoard = new matrix();
         for (int j = 0; j < boardSize; j++)
         {
             std::string line;
@@ -363,7 +356,7 @@ int main()
                 std::istringstream iss(line);
                 while (iss >> inputNumber)
                 {
-                    gameBoard->tiles[j][a] = inputNumber;
+                    gameBoard.tiles[j][a] = inputNumber;
                     //std::cout << inputNumber;
                 }
             }
@@ -377,7 +370,7 @@ int main()
 
         best = maxMoves;
         found = false;
-        solve2048(gameBoard, 0);
+        solve2048(gameBoard, 1);
         if (found == false)
         {
             std::cout << "no solution\n";
