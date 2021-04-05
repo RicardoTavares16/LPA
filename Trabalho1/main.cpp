@@ -275,9 +275,9 @@ matrix right(matrix board)
 
 void solve2048(matrix board, int play)
 {
+    //std::cout << "Calling on " << play << " move\n";
     if (play < best)
     {
-        //std::cout << "Calling on " << play << " move\n";
         matrix leftMatrix = left(board);
         if (is_solved(leftMatrix))
         {
@@ -292,6 +292,10 @@ void solve2048(matrix board, int play)
         {
             solve2048(leftMatrix, play + 1);
         }
+    }
+
+    if (play < best)
+    {
         matrix rightMatrix = right(board);
         if (is_solved(rightMatrix))
         {
@@ -306,6 +310,10 @@ void solve2048(matrix board, int play)
         {
             solve2048(rightMatrix, play + 1);
         }
+    }
+
+    if (play < best)
+    {
         matrix upMatrix = up(board);
         if (is_solved(upMatrix))
         {
@@ -320,6 +328,10 @@ void solve2048(matrix board, int play)
         {
             solve2048(upMatrix, play + 1);
         }
+    }
+
+    if (play < best)
+    {
         matrix downMatrix = down(board);
         if (is_solved(downMatrix))
         {
