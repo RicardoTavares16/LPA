@@ -12,6 +12,7 @@ bool didNothing = true;
 typedef struct
 {
     int tiles[20][20];
+    int countTiles;
 } matrix;
 
 matrix gameBoard;
@@ -53,6 +54,7 @@ matrix down(matrix board)
 {
     int i, j, k, temp;
     didNothing = true;
+board.countTiles = 0;
 
     for (i = boardSize - 1; i >= 0; i--)
     {
@@ -60,6 +62,7 @@ matrix down(matrix board)
         {
             if (board.tiles[j][i])
             {
+                board.countTiles++;
                 temp = board.tiles[j][i];
                 k = j - 1;
                 while (k >= 0)
@@ -68,6 +71,7 @@ matrix down(matrix board)
                     {
                         if (board.tiles[k][i] == board.tiles[j][i])
                         {
+                            board.countTiles--;
                             didNothing = false;
                             board.tiles[j][i] *= 2;
                             board.tiles[k][i] = 0;
@@ -89,6 +93,7 @@ matrix down(matrix board)
         {
             if (board.tiles[j][i] == 0 && board.tiles[k][i] != 0)
             {
+                board.countTiles++;
                 didNothing = false;
                 temp = board.tiles[k][i];
                 board.tiles[k][i] = board.tiles[j][i];
@@ -97,6 +102,7 @@ matrix down(matrix board)
             }
             else if (board.tiles[j][i])
             {
+                board.countTiles++;
                 j--;
             }
             k--;
@@ -110,6 +116,7 @@ matrix up(matrix board)
 {
     int i, j, k, temp;
     didNothing = true;
+board.countTiles = 0;
 
     for (i = 0; i < boardSize; i++)
     {
@@ -117,6 +124,7 @@ matrix up(matrix board)
         {
             if (board.tiles[j][i])
             {
+                board.countTiles++;
                 temp = board.tiles[j][i];
                 k = j + 1;
                 while (k < boardSize)
@@ -125,6 +133,7 @@ matrix up(matrix board)
                     {
                         if (board.tiles[k][i] == board.tiles[j][i])
                         {
+                            board.countTiles--;
                             didNothing = false;
                             board.tiles[j][i] *= 2;
                             board.tiles[k][i] = 0;
@@ -146,6 +155,7 @@ matrix up(matrix board)
         {
             if (board.tiles[j][i] == 0 && board.tiles[k][i] != 0)
             {
+                board.countTiles++;
                 didNothing = false;
                 temp = board.tiles[k][i];
                 board.tiles[k][i] = board.tiles[j][i];
@@ -154,6 +164,7 @@ matrix up(matrix board)
             }
             else if (board.tiles[j][i])
             {
+                board.countTiles++;
                 j++;
             }
             k++;
@@ -167,6 +178,7 @@ matrix left(matrix board)
 {
     int i, j, k, temp;
     didNothing = true;
+board.countTiles = 0;
 
     for (i = 0; i < boardSize; i++)
     {
@@ -174,6 +186,7 @@ matrix left(matrix board)
         {
             if (board.tiles[i][j])
             {
+                board.countTiles++;
                 temp = board.tiles[i][j];
                 k = j + 1;
                 while (k < boardSize)
@@ -182,6 +195,7 @@ matrix left(matrix board)
                     {
                         if (board.tiles[i][k] == board.tiles[i][j])
                         {
+                            board.countTiles--;
                             didNothing = false;
                             board.tiles[i][j] *= 2;
                             board.tiles[i][k] = 0;
@@ -203,6 +217,7 @@ matrix left(matrix board)
         {
             if (board.tiles[i][j] == 0 && board.tiles[i][k] != 0)
             {
+                board.countTiles++;
                 didNothing = false;
                 temp = board.tiles[i][k];
                 board.tiles[i][k] = board.tiles[i][j];
@@ -211,6 +226,7 @@ matrix left(matrix board)
             }
             else if (board.tiles[i][j])
             {
+                board.countTiles++;
                 j++;
             }
             k++;
@@ -224,7 +240,7 @@ matrix right(matrix board)
 {
     int i, j, k, temp;
     didNothing = true;
-
+    board.countTiles = 0;
     for (i = boardSize - 1; i >= 0; i--)
     {
         for (j = boardSize - 1; j >= 0; j--)
@@ -260,6 +276,7 @@ matrix right(matrix board)
         {
             if (board.tiles[i][j] == 0 && board.tiles[i][k] != 0)
             {
+                board.countTiles++;
                 didNothing = false;
                 temp = board.tiles[i][k];
                 board.tiles[i][k] = board.tiles[i][j];
@@ -268,6 +285,7 @@ matrix right(matrix board)
             }
             else if (board.tiles[i][j])
             {
+                board.countTiles++;
                 j--;
             }
             k--;
@@ -283,8 +301,10 @@ void solve2048(matrix board, int play)
     if (play < best)
     {
         matrix leftMatrix = left(board);
-        if (is_solved(leftMatrix))
+        //if (is_solved(leftMatrix))
+        if(leftMatrix.countTiles == 1)
         {
+           // std::cout << "Count tiles: " << leftMatrix.countTiles << "\n";
             if (play < best)
             {
                 best = play;
@@ -301,8 +321,10 @@ void solve2048(matrix board, int play)
     if (play < best)
     {
         matrix rightMatrix = right(board);
-        if (is_solved(rightMatrix))
+        //if (is_solved(rightMatrix))
+        if(rightMatrix.countTiles == 1)
         {
+           // std::cout << "Count tiles: " << rightMatrix.countTiles << "\n";
             if (play < best)
             {
                 best = play;
@@ -319,8 +341,10 @@ void solve2048(matrix board, int play)
     if (play < best)
     {
         matrix upMatrix = up(board);
-        if (is_solved(upMatrix))
+        //if (is_solved(upMatrix))
+        if(upMatrix.countTiles == 1)
         {
+           // std::cout << "Count tiles: " << upMatrix.countTiles << "\n";
             if (play < best)
             {
                 best = play;
@@ -334,11 +358,13 @@ void solve2048(matrix board, int play)
         }
     }
 
-    if (play < best)
+   if (play < best)
     {
         matrix downMatrix = down(board);
-        if (is_solved(downMatrix))
+        //if (is_solved(downMatrix))
+        if(downMatrix.countTiles == 1)
         {
+           // std::cout << "Count tiles: " << downMatrix.countTiles << "\n";
             if (play < best)
             {
                 best = play;
@@ -374,6 +400,9 @@ int main()
                 {
                     gameBoard.tiles[j][a] = inputNumber;
                     //std::cout << inputNumber;
+                    if(inputNumber != 0){
+                        gameBoard.countTiles++;
+                    }
                 }
             }
             //std::cout << "\n";
@@ -384,9 +413,17 @@ int main()
         // std::cout << "After move\n";
         // printMatrix(gameBoard);
 
-        best = maxMoves;
-        found = false;
-        solve2048(gameBoard, 1);
+       
+        if(gameBoard.countTiles != 1){
+            best = maxMoves;
+            found = false;
+            solve2048(gameBoard, 1);
+        }
+        else{
+            best = 0;
+            found = true;
+        }
+
         if (found == false)
         {
             std::cout << "no solution\n";
