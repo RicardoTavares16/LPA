@@ -447,7 +447,22 @@ int main()
         {
             best = maxMoves;
             found = false;
-            solve2048(gameBoard, 1);
+
+            matrix downMatrix = down(gameBoard);
+            matrix leftMatrix = left(gameBoard);
+            matrix upMatrix = up(gameBoard);
+            matrix rightMatrix = right(gameBoard);
+
+            int min = std::min(downMatrix.countTiles, std::min(leftMatrix.countTiles, std::min(upMatrix.countTiles, rightMatrix.countTiles)));
+            
+            if(min == 1){
+                found = true;
+                best = 1;
+            }
+            else{
+                solve2048(gameBoard, 1);
+
+            }
         }
         else
         {
@@ -467,6 +482,6 @@ int main()
 
        // std::cout << "CALLS: " << calls << "\n";
     }
-    std::cout << "Total time: " << float( clock () - begin_time ) /  CLOCKS_PER_SEC << "\n";
+    //std::cout << "Total time: " << float( clock () - begin_time ) /  CLOCKS_PER_SEC << "\n";
 
 }
