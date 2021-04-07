@@ -28,7 +28,6 @@ void printMatrix(matrix board)
     // std::cout << "Size " << boardSizeCheck << "\n";
     for (row = 0; row < boardSize; row++)
     {
-
         fprintf(stdout, "\t     |");
         for (col = 0; col < boardSize; col++)
         {
@@ -306,8 +305,8 @@ bool compareByLength(matrix &a, matrix &b)
 
 void solve2048(matrix board, int play)
 {
-    calls++;
-    std::vector<matrix> movesVector;
+    //calls++;
+    //std::vector<matrix> movesVector;
     //std::cout << "Calling on " << play << " move\n";
      if (play < best)
     {
@@ -326,7 +325,7 @@ void solve2048(matrix board, int play)
         if (!didNothing)
         {
             solve2048(downMatrix, play + 1);
-            movesVector.push_back(downMatrix);
+            //movesVector.push_back(downMatrix);
         }
     }
 
@@ -347,7 +346,7 @@ void solve2048(matrix board, int play)
         if (!didNothing)
         {
             solve2048(leftMatrix, play + 1);
-            movesVector.push_back(leftMatrix);
+            //movesVector.push_back(leftMatrix);
         }
     }
 
@@ -370,7 +369,7 @@ void solve2048(matrix board, int play)
         if (!didNothing)
         {
             solve2048(upMatrix, play + 1);
-            movesVector.push_back(upMatrix);
+            //movesVector.push_back(upMatrix);
         }
     }
 
@@ -391,20 +390,18 @@ void solve2048(matrix board, int play)
         if (!didNothing)
         {
             solve2048(rightMatrix, play + 1);
-            movesVector.push_back(rightMatrix);
+            //movesVector.push_back(rightMatrix);
         }
     }
 
-   
-
     // if (play < best)
     // {
+    //    std::sort(movesVector.begin(), movesVector.end(), compareByLength);
     //     for (std::vector<matrix>::iterator it = movesVector.begin(); it != movesVector.end(); ++it)
     //     {
     //         if (play < best)
     //         {
     //             solve2048(*it, play + 1);
-    //             //std::cout << "NUMBER OF TILES: " << it->countTiles << "\n";
     //         }
     //     }
     // }
@@ -444,7 +441,8 @@ int main()
         // gameBoard = right(gameBoard);
         // std::cout << "After move\n";
         // printMatrix(gameBoard);
-        calls = 0;
+        //calls = 0;
+
         if (gameBoard.countTiles != 1)
         {
             best = maxMoves;
@@ -453,6 +451,7 @@ int main()
         }
         else
         {
+            //Already solved
             best = 0;
             found = true;
         }
