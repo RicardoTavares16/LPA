@@ -23,9 +23,9 @@ matrix gameBoard;
 
 void printMatrix(matrix board)
 {
-    int row, col;
     // int boardSizeCheck = sizeof(board[0])/sizeof(board[0][0]);
     // std::cout << "Size " << boardSizeCheck << "\n";
+    int row, col;
     for (row = 0; row < boardSize; row++)
     {
         fprintf(stdout, "\t     |");
@@ -298,9 +298,30 @@ matrix right(matrix board)
     return board;
 }
 
-bool compareByLength(matrix &a, matrix &b)
+//check if sum of all tiles is power of 2
+bool isPossible(matrix board)
 {
-    return a.countTiles < b.countTiles;
+    int sum = 0;
+    for (int i = 0; i < boardSize; i++)
+    {
+        for (int j = 0; j < boardSize; j++)
+        {
+            if (board.tiles[i][j] > 0)
+            {
+                sum += board.tiles[i][j];
+            }
+        }
+    }
+
+    if ((sum & (sum - 1)) == 0)
+    {
+        return true;
+    }
+    else
+    {
+        //printf("impossivel\n");
+        return false;
+    }
 }
 
 void solve2048(matrix board, int play)
@@ -308,7 +329,8 @@ void solve2048(matrix board, int play)
     //calls++;
     //std::vector<matrix> movesVector;
     //std::cout << "Calling on " << play << " move\n";
-     if (play < best)
+
+    if (play < best)
     {
         matrix downMatrix = down(board);
         //if (is_solved(downMatrix))
@@ -322,7 +344,7 @@ void solve2048(matrix board, int play)
             found = true;
             return;
         }
-        if (!didNothing)
+        if (!didNothing && isPossible(downMatrix))
         {
             solve2048(downMatrix, play + 1);
             //movesVector.push_back(downMatrix);
@@ -343,14 +365,12 @@ void solve2048(matrix board, int play)
             found = true;
             return;
         }
-        if (!didNothing)
+        if (!didNothing && isPossible(leftMatrix))
         {
             solve2048(leftMatrix, play + 1);
             //movesVector.push_back(leftMatrix);
         }
     }
-
-    
 
     if (play < best)
     {
@@ -366,7 +386,7 @@ void solve2048(matrix board, int play)
             found = true;
             return;
         }
-        if (!didNothing)
+        if (!didNothing && isPossible(upMatrix))
         {
             solve2048(upMatrix, play + 1);
             //movesVector.push_back(upMatrix);
@@ -387,7 +407,7 @@ void solve2048(matrix board, int play)
             found = true;
             return;
         }
-        if (!didNothing)
+        if (!didNothing && isPossible(rightMatrix))
         {
             solve2048(rightMatrix, play + 1);
             //movesVector.push_back(rightMatrix);
@@ -441,10 +461,11 @@ int main()
         // gameBoard = right(gameBoard);
         // std::cout << "After move\n";
         // printMatrix(gameBoard);
-        //calls = 0;
+        // calls = 0;
 
         if (gameBoard.countTiles != 1)
         {
+            //check if game can be solved with 1 move
             best = maxMoves;
             found = false;
 
@@ -454,14 +475,18 @@ int main()
             matrix rightMatrix = right(gameBoard);
 
             int min = std::min(downMatrix.countTiles, std::min(leftMatrix.countTiles, std::min(upMatrix.countTiles, rightMatrix.countTiles)));
-            
-            if(min == 1){
+
+            if (min == 1)
+            {
                 found = true;
                 best = 1;
             }
-            else{
-                solve2048(gameBoard, 1);
-
+            else
+            {
+                if (isPossible(gameBoard))
+                {
+                    solve2048(gameBoard, 1);
+                }
             }
         }
         else
@@ -480,8 +505,7 @@ int main()
             std::cout << best << "\n";
         }
 
-       // std::cout << "CALLS: " << calls << "\n";
+        // std::cout << "CALLS: " << calls << "\n";
     }
     //std::cout << "Total time: " << float( clock () - begin_time ) /  CLOCKS_PER_SEC << "\n";
-
 }
