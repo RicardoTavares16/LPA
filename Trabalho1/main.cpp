@@ -3,11 +3,15 @@
 #include <string>
 #include <sstream>
 #include <cstring>
+#include <vector>
+#include <algorithm>
 
 int boardSize, maxMoves;
 int best;
 bool found = false;
 bool didNothing = true;
+int calls = 0;
+const clock_t begin_time = clock();
 
 typedef struct
 {
@@ -54,7 +58,7 @@ matrix down(matrix board)
 {
     int i, j, k, temp;
     didNothing = true;
-board.countTiles = 0;
+    board.countTiles = 0;
 
     for (i = boardSize - 1; i >= 0; i--)
     {
@@ -116,7 +120,7 @@ matrix up(matrix board)
 {
     int i, j, k, temp;
     didNothing = true;
-board.countTiles = 0;
+    board.countTiles = 0;
 
     for (i = 0; i < boardSize; i++)
     {
@@ -178,7 +182,7 @@ matrix left(matrix board)
 {
     int i, j, k, temp;
     didNothing = true;
-board.countTiles = 0;
+    board.countTiles = 0;
 
     for (i = 0; i < boardSize; i++)
     {
@@ -295,76 +299,23 @@ matrix right(matrix board)
     return board;
 }
 
+bool compareByLength(matrix &a, matrix &b)
+{
+    return a.countTiles < b.countTiles;
+}
+
 void solve2048(matrix board, int play)
 {
+    calls++;
+    std::vector<matrix> movesVector;
     //std::cout << "Calling on " << play << " move\n";
-    if (play < best)
-    {
-        matrix leftMatrix = left(board);
-        //if (is_solved(leftMatrix))
-        if(leftMatrix.countTiles == 1)
-        {
-           // std::cout << "Count tiles: " << leftMatrix.countTiles << "\n";
-            if (play < best)
-            {
-                best = play;
-            }
-            found = true;
-            return;
-        }
-        if (!didNothing)
-        {
-            solve2048(leftMatrix, play + 1);
-        }
-    }
-
-    if (play < best)
-    {
-        matrix rightMatrix = right(board);
-        //if (is_solved(rightMatrix))
-        if(rightMatrix.countTiles == 1)
-        {
-           // std::cout << "Count tiles: " << rightMatrix.countTiles << "\n";
-            if (play < best)
-            {
-                best = play;
-            }
-            found = true;
-            return;
-        }
-        if (!didNothing)
-        {
-            solve2048(rightMatrix, play + 1);
-        }
-    }
-
-    if (play < best)
-    {
-        matrix upMatrix = up(board);
-        //if (is_solved(upMatrix))
-        if(upMatrix.countTiles == 1)
-        {
-           // std::cout << "Count tiles: " << upMatrix.countTiles << "\n";
-            if (play < best)
-            {
-                best = play;
-            }
-            found = true;
-            return;
-        }
-        if (!didNothing)
-        {
-            solve2048(upMatrix, play + 1);
-        }
-    }
-
-   if (play < best)
+     if (play < best)
     {
         matrix downMatrix = down(board);
         //if (is_solved(downMatrix))
-        if(downMatrix.countTiles == 1)
+        if (downMatrix.countTiles == 1)
         {
-           // std::cout << "Count tiles: " << downMatrix.countTiles << "\n";
+            // std::cout << "Count tiles: " << downMatrix.countTiles << "\n";
             if (play < best)
             {
                 best = play;
@@ -375,8 +326,88 @@ void solve2048(matrix board, int play)
         if (!didNothing)
         {
             solve2048(downMatrix, play + 1);
+            movesVector.push_back(downMatrix);
         }
     }
+
+    if (play < best)
+    {
+        matrix leftMatrix = left(board);
+        //if (is_solved(leftMatrix))
+        if (leftMatrix.countTiles == 1)
+        {
+            // std::cout << "Count tiles: " << leftMatrix.countTiles << "\n";
+            if (play < best)
+            {
+                best = play;
+            }
+            found = true;
+            return;
+        }
+        if (!didNothing)
+        {
+            solve2048(leftMatrix, play + 1);
+            movesVector.push_back(leftMatrix);
+        }
+    }
+
+    
+
+    if (play < best)
+    {
+        matrix upMatrix = up(board);
+        //if (is_solved(upMatrix))
+        if (upMatrix.countTiles == 1)
+        {
+            // std::cout << "Count tiles: " << upMatrix.countTiles << "\n";
+            if (play < best)
+            {
+                best = play;
+            }
+            found = true;
+            return;
+        }
+        if (!didNothing)
+        {
+            solve2048(upMatrix, play + 1);
+            movesVector.push_back(upMatrix);
+        }
+    }
+
+    if (play < best)
+    {
+        matrix rightMatrix = right(board);
+        //if (is_solved(rightMatrix))
+        if (rightMatrix.countTiles == 1)
+        {
+            // std::cout << "Count tiles: " << rightMatrix.countTiles << "\n";
+            if (play < best)
+            {
+                best = play;
+            }
+            found = true;
+            return;
+        }
+        if (!didNothing)
+        {
+            solve2048(rightMatrix, play + 1);
+            movesVector.push_back(rightMatrix);
+        }
+    }
+
+   
+
+    // if (play < best)
+    // {
+    //     for (std::vector<matrix>::iterator it = movesVector.begin(); it != movesVector.end(); ++it)
+    //     {
+    //         if (play < best)
+    //         {
+    //             solve2048(*it, play + 1);
+    //             //std::cout << "NUMBER OF TILES: " << it->countTiles << "\n";
+    //         }
+    //     }
+    // }
 }
 
 int main()
@@ -400,7 +431,8 @@ int main()
                 {
                     gameBoard.tiles[j][a] = inputNumber;
                     //std::cout << inputNumber;
-                    if(inputNumber != 0){
+                    if (inputNumber != 0)
+                    {
                         gameBoard.countTiles++;
                     }
                 }
@@ -412,14 +444,15 @@ int main()
         // gameBoard = right(gameBoard);
         // std::cout << "After move\n";
         // printMatrix(gameBoard);
-
-       
-        if(gameBoard.countTiles != 1){
+        calls = 0;
+        if (gameBoard.countTiles != 1)
+        {
             best = maxMoves;
             found = false;
             solve2048(gameBoard, 1);
         }
-        else{
+        else
+        {
             best = 0;
             found = true;
         }
@@ -432,5 +465,9 @@ int main()
         {
             std::cout << best << "\n";
         }
+
+       // std::cout << "CALLS: " << calls << "\n";
     }
+    std::cout << "Total time: " << float( clock () - begin_time ) /  CLOCKS_PER_SEC << "\n";
+
 }
