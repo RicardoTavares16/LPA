@@ -6,6 +6,7 @@
 #include <vector>
 #include <algorithm>
 
+
 int boardSize, maxMoves;
 int best;
 bool found = false;
