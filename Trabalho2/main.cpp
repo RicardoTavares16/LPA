@@ -2,12 +2,45 @@
 #include <cstdlib>
 
 int nBlocks, blockHeight, maxHeight;
+int totalComb = 0;
+int x[501];
 
-void solve(){
-    
-
+int mod_abs(int a, int mod) {
+  return ((a % mod) + mod) % mod;
 }
 
+int mod_add(int a, int b, int mod) {
+  return (mod_abs(a, mod) + mod_abs(b, mod)) % mod;
+}
+
+int mod_sub(int a, int b, int mod) {
+  return mod_add(a, -b, mod);
+}
+
+void solve()
+{
+    for (int i = 3; i < nBlocks; i++)
+    {
+
+        if (i == 3)
+        {
+            x[3] = blockHeight - 1;
+        }
+        else
+        {
+            // int minHeight = 1;
+            // for (int j = 1; j < i / 2; j++)
+            // {
+            //     for(int k = 0; blockHeight - 1; k++){
+            //         if((minHeight + k + blockHeight) <= maxHeight){
+            //             totalComb++;
+            //         }
+            //     }
+            //     minHeight++;
+            // }
+        }
+    }
+}
 
 int main()
 {
@@ -17,21 +50,19 @@ int main()
     // The values of hi should be monotonically increasing, up to a certain block, and then monotonically decreasing. Formally, there exists a block l such that h1 < ⋯ < hl > ⋯ > hk. Note that two consecutive blocks cannot have the same value of hi.
 
     int testCases;
-   
+
     std::cin >> testCases;
 
     for (int i = 0; i < testCases; i++)
     {
+        totalComb = 0;
         std::cin >> nBlocks;
         std::cin >> blockHeight;
         std::cin >> maxHeight;
         //std::cout << nBlocks << " " << blockHeight << " " << maxHeight << std::endl;
 
+        solve();
 
-
-
-
+        std::cout << totalComb << "\n";
     }
-
-    
 }
