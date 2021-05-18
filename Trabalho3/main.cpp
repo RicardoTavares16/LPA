@@ -76,33 +76,24 @@ void printAnswers(int questions)
         {
             answers[0]++;
 
-            //get max circuit size
-            if ((int)stronglyConnectedComponents[i].size() > maxPOICount)
+            if (questions > 1)
             {
-                maxPOICount = stronglyConnectedComponents[i].size();
+                //get max circuit size
+                if ((int)stronglyConnectedComponents[i].size() > maxPOICount)
+                {
+                    maxPOICount = stronglyConnectedComponents[i].size();
+                }
             }
         }
     }
 
     answers[1] = maxPOICount;
 
-    switch (questions)
+    for (int i = 0; i < questions; i++)
     {
-    case 1:
-        printf("%d\n", answers[0]);
-        break;
-    case 2:
-        printf("%d %d\n", answers[0], answers[1]);
-        break;
-    case 3:
-        printf("%d %d %d\n", answers[0], answers[1], answers[2]);
-        break;
-    case 4:
-        printf("%d %d %d %d\n", answers[0], answers[1], answers[2], answers[3]);
-        break;
-    default:
-        break;
+        printf("%d ", answers[i]);
     }
+    printf("\n");
 }
 void clearData(int vCount)
 {
