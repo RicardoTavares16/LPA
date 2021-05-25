@@ -5,13 +5,16 @@
 
 int t, vCount;
 std::vector<std::vector<std::pair<int, int>>> adjMatrix;
+
+int set[1001], rank[1001];
 std::vector<int> dfs;
 std::vector<int> low;
 std::vector<int> vertexStack;
 std::vector<std::vector<int>> stronglyConnectedComponents;
-std::vector<std::pair<long double, std::pair<int, int>>> edges;
-int set[1001], rank[1001];
 
+std::vector<std::pair<long double, std::pair<int, int>>> edges;
+
+// region kruskal
 void makeSet()
 {
     for (int i = 1; i <= vCount; i++)
@@ -51,41 +54,31 @@ void unionSet(int a, int b)
     link(find(a), find(b));
 }
 
-long double kruskal(){
-
-    long double minimum_path = 0;
+long double kruskal()
+{
+    long double minimumPath = 0;
     makeSet();
-    sort(edges.begin(),edges.end());
+    std::sort(edges.begin(), edges.end());
 
-    for(int i=0; i < (int)edges.size(); i++){
+    for (int i = 0; i < (int)edges.size(); i++)
+    {
         int u = edges[i].second.first;
         int v = edges[i].second.second;
         double w = edges[i].first;
 
-        if(find(u)!= find(v)){
-            unionSet(u,v);
-            minimum_path += w;
+        if (find(u) != find(v))
+        {
+            unionSet(u, v);
+            minimumPath += w;
         }
     }
     edges.clear();
-    return minimum_path;
+    return minimumPath;
 }
 
-bool decrease(const std::pair<long double, std::pair<int, int>> &a, const std::pair<long double, std::pair<int, int>> &b)
-{
-    if (a.first == b.first)
-    {
-        if (a.second.first == b.second.first)
-        {
-            return (a.second.second < b.second.second);
-        }
-        else
-            return (a.second.first < b.second.first);
-    }
-    else
-        return (a.first > b.first);
-}
+// endregion kruskal
 
+// region tarjan
 void tarjan(int v)
 {
     t++;
@@ -140,6 +133,7 @@ void countStronglyConnectedComponents()
         }
     }
 }
+//endregion tarjan
 
 void printAnswers(int questions)
 {
@@ -165,11 +159,11 @@ void printAnswers(int questions)
 
             if (questions > 2)
             {
+                //Build aux structure for MST
                 for (int j = 0; j < (int)stronglyConnectedComponents[i].size(); j++)
                 {
                     if ((int)stronglyConnectedComponents[i].size() > 1)
                     {
-
                         int a = stronglyConnectedComponents[i][j]; // vertex a
 
                         for (int k = 0; k < (int)adjMatrix[stronglyConnectedComponents[i][j]].size(); k++)
@@ -183,6 +177,7 @@ void printAnswers(int questions)
                                         int b = adjMatrix[stronglyConnectedComponents[i][j]][k].first;  // vertex b
                                         int c = adjMatrix[stronglyConnectedComponents[i][j]][k].second; // cost
 
+                                        //Fill new structure with circuit vertices
                                         edges.push_back(std::make_pair(c, std::make_pair(a, b)));
                                     }
                                 }
@@ -191,7 +186,7 @@ void printAnswers(int questions)
                     }
                 }
 
-                //std::sort(edges.begin(), edges.end(), decrease);
+                //get MST for longest lane
                 int answer3tmp = (int)kruskal();
 
                 if (answer3tmp > maxKruskal)
@@ -199,6 +194,7 @@ void printAnswers(int questions)
                     maxKruskal = answer3tmp;
                 }
 
+                //total length of bike lane
                 if (questions > 3)
                 {
                     answers[3] += answer3tmp;
