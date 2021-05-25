@@ -3,7 +3,7 @@
 #include <vector>
 #include <algorithm>
 
-int t;
+int t, vCount;
 std::vector<std::vector<std::pair<int, int>>> adjMatrix;
 std::vector<int> dfs;
 std::vector<int> low;
@@ -12,7 +12,7 @@ std::vector<std::vector<int>> stronglyConnectedComponents;
 std::vector<std::pair<long double, std::pair<int, int>>> edges;
 int set[1000], rank[1000];
 
-void makeSet(int vCount)
+void makeSet()
 {
     for (int i = 1; i <= vCount; i++)
     {
@@ -51,11 +51,11 @@ void unionSet(int a, int b)
     link(find(a), find(b));
 }
 
-long double kruskal(int vCount)
+long double kruskal()
 {
     long double w, weight = 0;
     int a, b;
-    makeSet(vCount);
+    makeSet();
     while (!edges.empty())
     {
         a = edges.back().second.first;
@@ -125,7 +125,7 @@ void tarjan(int v)
     }
 }
 
-void countStronglyConnectedComponents(int vCount)
+void countStronglyConnectedComponents()
 {
     t = 0;
     for (int i = 1; i <= vCount; i++)
@@ -141,7 +141,7 @@ void countStronglyConnectedComponents(int vCount)
     }
 }
 
-void printAnswers(int questions, int vCount)
+void printAnswers(int questions)
 {
     int answers[4] = {0};
     int maxPOICount = 0;
@@ -150,7 +150,7 @@ void printAnswers(int questions, int vCount)
     for (int i = 0; i < (int)stronglyConnectedComponents.size(); i++)
     {
         //check number of circuits
-        if (stronglyConnectedComponents[i].size() > 1)
+        if ((int)stronglyConnectedComponents[i].size() > 1)
         {
             answers[0]++;
 
@@ -167,32 +167,40 @@ void printAnswers(int questions, int vCount)
             {
                 for (int j = 0; j < (int)stronglyConnectedComponents[i].size(); j++)
                 {
-                    int a = stronglyConnectedComponents[i][j]; // vertex a
-
-                    for (int k = 0; k < (int)adjMatrix[stronglyConnectedComponents[i][j]].size(); k++)
+                    if ((int)stronglyConnectedComponents[i].size() > 1)
                     {
-                        for (int h = 0; h < (int)stronglyConnectedComponents[i].size(); h++)
-                        {
-                            if (adjMatrix[stronglyConnectedComponents[i][j]][k].first == stronglyConnectedComponents[i][h])
-                            {
-                                int b = adjMatrix[stronglyConnectedComponents[i][j]][k].first;  // vertex b
-                                int c = adjMatrix[stronglyConnectedComponents[i][j]][k].second; // cost
 
-                                edges.push_back(std::make_pair(c, std::make_pair(a, b)));
+                        int a = stronglyConnectedComponents[i][j]; // vertex a
+
+                        for (int k = 0; k < (int)adjMatrix[stronglyConnectedComponents[i][j]].size(); k++)
+                        {
+                            for (int h = 0; h < (int)stronglyConnectedComponents[i].size(); h++)
+                            {
+                                if ((int)stronglyConnectedComponents[i].size() > 1)
+                                {
+                                    if (adjMatrix[stronglyConnectedComponents[i][j]][k].first == stronglyConnectedComponents[i][h])
+                                    {
+                                        int b = adjMatrix[stronglyConnectedComponents[i][j]][k].first;  // vertex b
+                                        int c = adjMatrix[stronglyConnectedComponents[i][j]][k].second; // cost
+
+                                        edges.push_back(std::make_pair(c, std::make_pair(a, b)));
+                                    }
+                                }
                             }
                         }
                     }
                 }
 
                 std::sort(edges.begin(), edges.end(), decrease);
-                int answer3tmp = (int)kruskal(vCount);
+                int answer3tmp = kruskal();
 
                 if (answer3tmp > maxKruskal)
                 {
                     maxKruskal = answer3tmp;
                 }
 
-                if(questions > 3){
+                if (questions > 3)
+                {
                     answers[3] += answer3tmp;
                 }
             }
@@ -202,13 +210,25 @@ void printAnswers(int questions, int vCount)
     answers[1] = maxPOICount;
     answers[2] = maxKruskal;
 
-    for (int i = 0; i < questions; i++)
+    switch (questions)
     {
-        printf("%d ", answers[i]);
+    case 1:
+        printf("%d\n", answers[0]);
+        break;
+    case 2:
+        printf("%d %d\n", answers[0], answers[1]);
+        break;
+    case 3:
+        printf("%d %d %d\n", answers[0], answers[1], answers[2]);
+        break;
+    case 4:
+        printf("%d %d %d %d\n", answers[0], answers[1], answers[2], answers[3]);
+        break;
+    default:
+        break;
     }
-    printf("\n");
 }
-void clearData(int vCount)
+void clearData()
 {
     adjMatrix.clear();
     adjMatrix.resize(vCount + 1);
@@ -224,10 +244,10 @@ int main()
 
     for (int i = 0; i < testCases; i++)
     {
-        int poiCount, numberOfConnections, questions;
-        std::cin >> poiCount >> numberOfConnections >> questions;
+        int numberOfConnections, questions;
+        std::cin >> vCount >> numberOfConnections >> questions;
 
-        clearData(poiCount);
+        clearData();
 
         for (int j = 0; j < numberOfConnections; j++)
         {
@@ -236,11 +256,11 @@ int main()
             adjMatrix[A].push_back(std::make_pair(B, weight));
         }
 
-        //printf("Test Case: %d POIs: %d Conn: %d Questions: %d\n", i + 1, poiCount, numberOfConnections, questions);
+        //printf("Test Case: %d POIs: %d Conn: %d Questions: %d\n", i + 1, vCount, numberOfConnections, questions);
 
-        countStronglyConnectedComponents(poiCount);
+        countStronglyConnectedComponents();
 
-        printAnswers(questions, poiCount);
+        printAnswers(questions);
     }
     return 0;
 }
