@@ -10,7 +10,7 @@ std::vector<int> low;
 std::vector<int> vertexStack;
 std::vector<std::vector<int>> stronglyConnectedComponents;
 std::vector<std::pair<long double, std::pair<int, int>>> edges;
-int set[1000], rank[1000];
+int set[1001], rank[1001];
 
 void makeSet()
 {
@@ -51,24 +51,24 @@ void unionSet(int a, int b)
     link(find(a), find(b));
 }
 
-long double kruskal()
-{
-    long double w, weight = 0;
-    int a, b;
+long double kruskal(){
+
+    long double minimum_path = 0;
     makeSet();
-    while (!edges.empty())
-    {
-        a = edges.back().second.first;
-        b = edges.back().second.second;
-        w = edges.back().first;
-        if (find(a) != find(b))
-        {
-            weight += w;
-            unionSet(a, b);
+    sort(edges.begin(),edges.end());
+
+    for(int i=0; i < (int)edges.size(); i++){
+        int u = edges[i].second.first;
+        int v = edges[i].second.second;
+        double w = edges[i].first;
+
+        if(find(u)!= find(v)){
+            unionSet(u,v);
+            minimum_path += w;
         }
-        edges.pop_back();
     }
-    return weight;
+    edges.clear();
+    return minimum_path;
 }
 
 bool decrease(const std::pair<long double, std::pair<int, int>> &a, const std::pair<long double, std::pair<int, int>> &b)
@@ -191,8 +191,8 @@ void printAnswers(int questions)
                     }
                 }
 
-                std::sort(edges.begin(), edges.end(), decrease);
-                int answer3tmp = kruskal();
+                //std::sort(edges.begin(), edges.end(), decrease);
+                int answer3tmp = (int)kruskal();
 
                 if (answer3tmp > maxKruskal)
                 {
@@ -234,7 +234,7 @@ void clearData()
     adjMatrix.resize(vCount + 1);
     low.resize(vCount + 1);
     dfs.resize(vCount + 1);
-    stronglyConnectedComponents.resize(vCount + 1);
+    stronglyConnectedComponents.clear();
 }
 
 int main()
@@ -262,5 +262,4 @@ int main()
 
         printAnswers(questions);
     }
-    return 0;
 }
