@@ -1,1 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/cc -ansi -Wall -Wextra -Wpedantic -g -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/segment_intersection.dir/main.c.o  -o segment_intersection 
